@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản trị - BẢO HIỂM XÃ HỘI VIỆT NAM</title>
+  <link rel="icon" type="image/png" href="/images/logonew.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    .admin-layout { display:flex; min-height:100vh; background:#f4f6fb; }
+    .admin-sb {
+      width: 260px; background: linear-gradient(180deg, #042c6a, #0a1f42);
+      color: #fff; display:flex; flex-direction:column; flex-shrink:0;
+      border-right: 3px solid #5ed6fc;
+    }
+    .admin-sb-brand {
+      padding: 18px 18px; border-bottom: 1px solid rgba(255,255,255,0.1);
+      display:flex; align-items:center; gap:10px;
+    }
+    .admin-sb-brand img { width:36px; height:36px; object-fit:contain; }
+    .admin-sb-brand span { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; line-height:1.2; }
+    .admin-sb-menu { flex:1; padding:8px 0; overflow-y:auto; }
+    .admin-sb-item {
+      display:flex; align-items:center; gap:12px; padding:11px 18px; min-height:44px;
+      color: #cfe1ff; font-size:14px; font-weight:600; cursor:pointer;
+      border-left: 3px solid transparent; transition:all .15s;
+      text-decoration:none !important; box-sizing:border-box;
+    }
+    .admin-sb-item:hover { background:rgba(88,167,247,0.15); color:#fff; }
+    .admin-sb-item.active { background:rgba(88,167,247,0.22); color:#fff; border-left-color:#5ed6fc; }
+    .admin-sb-item i { width:18px; text-align:center; font-size:16px; }
+    .admin-sb-item .badge {
+      margin-left:auto; background:#be1e2d; color:#fff; font-size:11px;
+      padding:2px 7px; border-radius:10px;
+    }
+    .admin-main { flex:1; display:flex; flex-direction:column; min-width:0; }
+    .admin-topbar {
+      background:#fff; padding:12px 24px; display:flex; align-items:center;
+      justify-content:space-between; border-bottom:1px solid #e6ebf3;
+      box-shadow:0 2px 8px rgba(17,49,96,.06);
+    }
+    .admin-topbar h1 { margin:0; font-size:18px; font-weight:700; color:#042c6a; }
+    .admin-topbar-right { display:flex; align-items:center; gap:14px; }
+    .admin-topbar-right .admin-user {
+      display:flex; align-items:center; gap:8px; font-size:13px; color:#333; cursor:pointer;
+    }
+    .admin-topbar-right .admin-user img {
+      width:34px; height:34px; border-radius:50%; background:#e3f0fd;
+      border:2px solid #0372b6;
+    }
+    .admin-content { flex:1; padding:24px; overflow-y:auto; }
+
+    /* Stats cards */
+    .admin-stats { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:16px; margin-bottom:24px; }
+    .admin-stat-card {
+      background:#fff; border-radius:12px; padding:20px;
+      box-shadow:0 4px 16px rgba(17,49,96,.05); border:1px solid #eaeef6;
+      display:flex; align-items:center; gap:16px;
+    }
+    .admin-stat-card .icon {
+      width:48px; height:48px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:22px; flex-shrink:0;
+    }
+    .admin-stat-card .info { flex:1; min-width:0; }
+    .admin-stat-card .info .label { font-size:12px; color:#7b8aa5; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
+    .admin-stat-card .info .value { font-size:22px; font-weight:800; color:#042c6a; line-height:1.2; }
+
+    .admin-section { display:none; }
+    .admin-section.active { display:block; }
+
+    .admin-card {
+      background:#fff; border-radius:12px; border:1px solid #eaeef6;
+      box-shadow:0 4px 16px rgba(17,49,96,.05); padding:20px; margin-bottom:20px;
+    }
+    .admin-card h3 {
+      font-size:16px; font-weight:700; color:#042c6a; margin:0 0 16px;
+      padding-bottom:10px; border-bottom:2px solid #0372b6;
+      text-transform:uppercase; letter-spacing:0.3px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .admin-table {
+      width:100%; font-size:14px; border-collapse:collapse;
+    }
+    .admin-table th {
+      background:#f5f7fa; color:#042c6a; font-weight:700; font-size:13px;
+      text-transform:uppercase; letter-spacing:0.3px;
+      padding:10px; border:1px solid #d6dde8; text-align:left;
+    }
+    .admin-table td {
+      padding:10px; border:1px solid #d6dde8; vertical-align:middle;
+    }
+    .admin-table tbody tr:hover { background:#f8fafc; }
+    .admin-badge {
+      display:inline-block; padding:2px 10px; border-radius:20px;
+      font-size:12px; font-weight:700;
+    }
+    .admin-btn {
+      display:inline-flex; align-items:center; gap:4px; padding:6px 14px;
+      border:none; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer;
+      transition:all .15s;
+    }
+    .admin-btn-sm { padding:4px 10px; font-size:12px; }
+    .admin-btn-primary { background:#1976d2; color:#fff; }
+    .admin-btn-primary:hover { background:#1565c0; }
+    .admin-btn-success { background:#0a7a2a; color:#fff; }
+    .admin-btn-success:hover { background:#086322; }
+    .admin-btn-danger { background:#be1e2d; color:#fff; }
+    .admin-btn-danger:hover { background:#a01925; }
+    .admin-btn-ghost { background:#f5f5f5; color:#555; }
+    .admin-btn-ghost:hover { background:#e8e8e8; }
+    .admin-search { display:flex; gap:8px; margin-bottom:16px; }
+    .admin-search input {
+      flex:1; padding:8px 12px; border:1px solid #d6dde8; border-radius:6px;
+      font-size:14px; outline:none;
+    }
+    .admin-search input:focus { border-color:#0372b6; box-shadow:0 0 0 2px rgba(3,114,182,0.15); }
+    .admin-filter { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .admin-filter select {
+      padding:6px 12px; border:1px solid #d6dde8; border-radius:6px;
+      font-size:14px; outline:none; background:#fff;
+    }
+
+    /* Activity list */
+    .activity-list { list-style:none; padding:0; margin:0; }
+    .activity-list li {
+      display:flex; align-items:flex-start; gap:12px;
+      padding:10px 0; border-bottom:1px solid #f0f3f8; font-size:14px;
+    }
+    .activity-list li:last-child { border-bottom:none; }
+    .activity-list .time { color:#96a1b4; font-size:12px; white-space:nowrap; flex-shrink:0; width:50px; }
+    .activity-list .dot {
+      width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px;
+    }
+    .activity-list .dot.success { background:#0a7a2a; }
+    .activity-list .dot.info { background:#0372b6; }
+    .activity-list .dot.warning { background:#b06a00; }
+    .activity-list .dot.error { background:#be1e2d; }
+
+    .admin-chart { height:200px; display:flex; align-items:flex-end; gap:6px; padding:10px 0; }
+    .admin-chart .bar {
+      flex:1; background:linear-gradient(180deg,#0372b6,#042c6a);
+      border-radius:4px 4px 0 0; min-height:4px; position:relative; transition:height .3s;
+    }
+    .admin-chart .bar:hover { opacity:0.9; }
+    .admin-chart .bar .bar-label {
+      position:absolute; bottom:-20px; left:50%; transform:translateX(-50%);
+      font-size:11px; color:#7b8aa5; white-space:nowrap;
+    }
+
+    @media (max-width:768px) {
+      .admin-layout { flex-direction:column; }
+      .admin-sb { width:100%; flex-direction:row; overflow-x:auto; border-right:none; border-bottom:3px solid #5ed6fc; }
+      .admin-sb-brand { display:none; }
+      .admin-sb-menu { display:flex; padding:0; }
+      .admin-sb-item { border-left:none; border-bottom:3px solid transparent; white-space:nowrap; }
+      .admin-sb-item.active { border-left:none; border-bottom-color:#5ed6fc; }
+      .admin-content { padding:16px; }
+      .admin-stats { grid-template-columns:repeat(2,1fr); gap:10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="admin-layout" id="adminLayout">
+  <!-- SIDEBAR -->
+  <div class="admin-sb">
+    <div class="admin-sb-brand">
+      <img src="/images/logonew.png" alt="BHXH">
+      <span>Bảo hiểm<br>Xã hội</span>
+    </div>
+    <nav class="admin-sb-menu">
+      <a class="admin-sb-item active" data-section="dashboard" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="admin-sb-item" data-section="users" href="#"><i class="bi bi-people"></i> Người dùng <span class="badge" id="userBadge">0</span></a>
+      <a class="admin-sb-item" data-section="registrations" href="#"><i class="bi bi-file-earmark-text"></i> Đăng ký <span class="badge" id="regBadge">0</span></a>
+      <a class="admin-sb-item" data-section="appointments" href="#"><i class="bi bi-calendar-check"></i> Lịch hẹn <span class="badge" id="apptBadge">0</span></a>
+      <a class="admin-sb-item" data-section="chat" href="#"><i class="bi bi-chat-dots"></i> Hỗ trợ <span class="badge" id="chatBadge">0</span></a>
+      <a class="admin-sb-item" data-section="agencies" href="#"><i class="bi bi-building"></i> Đơn vị BHXH</a>
+      <a class="admin-sb-item" data-section="reports" href="#"><i class="bi bi-graph-up"></i> Báo cáo</a>
+      <a class="admin-sb-item" data-section="qrcode" href="#"><i class="bi bi-qr-code"></i> Mã QR</a>
+      <a class="admin-sb-item" data-section="settings" href="#"><i class="bi bi-gear"></i> Cài đặt</a>
+      <a class="admin-sb-item" href="/"><i class="bi bi-arrow-left-circle"></i> Về trang chủ</a>
+    </nav>
+  </div>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="admin-topbar-right">
+        <span style="font-size:13px;color:#7b8aa5" id="currentDateTime"></span>
+        <div class="admin-user" style="cursor:pointer" onclick="adminLogout()" title="Đăng xuất">
+          <img src="/images/logonew.png" alt="Admin">
+          <span>Admin <i class="bi bi-box-arrow-right" style="font-size:11px"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <!-- ===== DASHBOARD ===== -->
+      <div class="admin-section active" id="section-dashboard">
+        <div class="admin-stats" id="dashboardStats">
+          <div class="admin-stat-card"><div class="icon" style="background:#e3f0fd;color:#0372b6"><i class="bi bi-people"></i></div><div class="info"><div class="label">Tổng người dùng</div><div class="value" id="statTotalUsers">0</div></div></div>
+          <div class="admin-stat-card"><div class="icon" style="background:#d4edda;color:#0a7a2a"><i class="bi bi-person-check"></i></div><div class="info"><div class="label">Đang hoạt động</div><div class="value" id="statActiveUsers">0</div></div></div>
+          <div class="admin-stat-card"><div class="icon" style="background:#fff3cd;color:#b06a00"><i class="bi bi-hourglass-split"></i></div><div class="info"><div class="label">Chờ duyệt</div><div class="value" id="statPending">0</div></div></div>
+          <div class="admin-stat-card"><div class="icon" style="background:#f8d7da;color:#be1e2d"><i class="bi bi-file-earmark"></i></div><div class="info"><div class="label">Hồ sơ hôm nay</div><div class="value" id="statToday">0</div></div></div>
+        </div>
+
+        <div class="admin-card">
+          <h3><i class="bi bi-activity"></i> Tổng quan hồ sơ</h3>
+          <div class="admin-stats" style="grid-template-columns:repeat(2,1fr)">
+            <div class="admin-stat-card" style="padding:14px"><div class="icon" style="background:#e3f0fd;color:#0372b6;width:40px;height:40px;font-size:16px"><i class="bi bi-inbox"></i></div><div class="info"><div class="label">Đã tiếp nhận</div><div class="value" id="statSubmissions">0</div></div></div>
+            <div class="admin-stat-card" style="padding:14px"><div class="icon" style="background:#d4edda;color:#0a7a2a;width:40px;height:40px;font-size:16px"><i class="bi bi-check-all"></i></div><div class="info"><div class="label">Đã giải quyết</div><div class="value" id="statProcessed">0</div></div></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="admin-card">
+            <h3><i class="bi bi-bar-chart"></i> Lượt đăng ký 6 tháng</h3>
+            <div class="admin-chart" id="regChart"></div>
+          </div>
+          <div class="admin-card">
+            <h3><i class="bi bi-bell"></i> Hoạt động gần đây</h3>
+            <ul class="activity-list" id="activityList"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== USERS ===== -->
+      <div class="admin-section" id="section-users">
+        <div class="admin-card">
+          <h3><i class="bi bi-people"></i> Quản lý người dùng</h3>
+          <div class="admin-search">
+            <input type="text" id="userSearch" placeholder="Tìm kiếm theo tên, mã BHXH, CCCD, số điện thoại..." oninput="filterUsers()">
+            <select id="userStatusFilter" onchange="filterUsers()">
+              <option value="">Tất cả trạng thái</option>
+              <option value="approved">Đã duyệt</option>
+              <option value="pending">Chờ duyệt</option>
+              <option value="rejected">Từ chối</option>
+            </select>
+            <select id="userTypeFilter" onchange="filterUsers()">
+              <option value="">Tất cả loại</option>
+              <option value="individual">Cá nhân</option>
+              <option value="organization">Tổ chức</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="admin-table">
+              <thead>
+                <tr><th>ID</th><th>Họ tên</th><th>Mã BHXH</th><th>Số CCCD</th><th>Điện thoại</th><th>Loại</th><th>Trạng thái</th><th>Ngày ĐK</th><th>Thao tác</th></tr>
+              </thead>
+              <tbody id="userTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REGISTRATIONS ===== -->
+      <div class="admin-section" id="section-registrations">
+        <div class="admin-card">
+          <h3><i class="bi bi-file-earmark-text"></i> Quản lý đăng ký chờ duyệt</h3>
+          <div class="admin-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+            <div class="admin-stat-card" style="padding:14px"><div class="info"><div class="label">Chờ duyệt</div><div class="value" id="regPendingCount" style="color:#b06a00">0</div></div></div>
+            <div class="admin-stat-card" style="padding:14px"><div class="info"><div class="label">Đã duyệt</div><div class="value" id="regApprovedCount" style="color:#0a7a2a">0</div></div></div>
+            <div class="admin-stat-card" style="padding:14px"><div class="info"><div class="label">Từ chối</div><div class="value" id="regRejectedCount" style="color:#be1e2d">0</div></div></div>
+            <div class="admin-stat-card" style="padding:14px"><div class="info"><div class="label">Tổng số</div><div class="value" id="regTotalCount">0</div></div></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="admin-table">
+              <thead>
+                <tr><th>ID</th><th>Họ tên</th><th>Mã BHXH</th><th>CCCD</th><th>Điện thoại</th><th>Loại</th><th>Trạng thái</th><th>Ngày ĐK</th><th>Thao tác</th></tr>
+              </thead>
+              <tbody id="regTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REPORTS ===== -->
+      <div class="admin-section" id="section-reports">
+        <div class="admin-card">
+          <h3><i class="bi bi-graph-up"></i> Báo cáo thống kê</h3>
+          <div class="admin-filter">
+            <select><option>6 tháng đầu năm 2026</option><option>Năm 2025</option><option>Năm 2024</option></select>
+            <button class="admin-btn admin-btn-primary" onclick="showToast('Xuất báo cáo', 'info')"><i class="bi bi-download"></i> Xuất báo cáo</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Tháng</th><th>Số lượng ĐK</th><th>Đã duyệt</th><th>Chờ duyệt</th><th>Từ chối</th><th>Cá nhân</th><th>Tổ chức</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Tháng 1</td><td>180</td><td>165</td><td>10</td><td>5</td><td>120</td><td>60</td></tr>
+                <tr><td>Tháng 2</td><td>220</td><td>200</td><td>12</td><td>8</td><td>145</td><td>75</td></tr>
+                <tr><td>Tháng 3</td><td>280</td><td>258</td><td>15</td><td>7</td><td>190</td><td>90</td></tr>
+                <tr><td>Tháng 4</td><td>350</td><td>320</td><td>18</td><td>12</td><td>230</td><td>120</td></tr>
+                <tr><td>Tháng 5</td><td>410</td><td>380</td><td>22</td><td>8</td><td>270</td><td>140</td></tr>
+                <tr><td>Tháng 6</td><td>520</td><td>480</td><td>30</td><td>10</td><td>345</td><td>175</td></tr>
+                <tr style="font-weight:700;background:#f5f7fa"><td>Tổng</td><td>1,960</td><td>1,803</td><td>107</td><td>50</td><td>1,300</td><td>660</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== AGENCIES ===== -->
+      <div class="admin-section" id="section-agencies" style="display:none">
+        <div class="admin-card">
+          <h3><i class="bi bi-building"></i> Danh sách đơn vị Bảo hiểm Xã hội</h3>
+          <div style="margin-bottom:12px;display:flex;gap:8px">
+            <input type="text" id="agencySearchInput" placeholder="Tìm kiếm đơn vị..." style="flex:1;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none" oninput="filterAgencyTree()">
+          </div>
+          <div id="agencyTreeContainer" style="max-height:500px;overflow-y:auto;border:1px solid #e6ebf3;border-radius:6px;padding:8px"></div>
+        </div>
+      </div>
+
+      <!-- ===== QR CODE ===== -->
+      <div class="admin-section" id="section-qrcode">
+        <div class="admin-card">
+          <h3><i class="bi bi-qr-code"></i> Tạo mã QR thanh toán ngân hàng</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+            <div>
+              <div style="margin-bottom:12px">
+                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Ngân hàng thụ hưởng <span style="color:#be1e2d">*</span></label>
+                <select id="qrBank" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;background:#fff;outline:none">
+                  <option value="VCB|Vietcombank">Vietcombank</option>
+                  <option value="BIDV|BIDV">BIDV</option>
+                  <option value="VTIB|VietinBank">VietinBank</option>
+                  <option value="AGR|Agribank">Agribank</option>
+                  <option value="MB|MB Bank">MB Bank</option>
+                  <option value="TCB|Techcombank">Techcombank</option>
+                  <option value="ACB|ACB">ACB</option>
+                  <option value="VPB|VPBank">VPBank</option>
+                  <option value="TPB|TPBank">TPBank</option>
+                  <option value="HDB|HDBank">HDBank</option>
+                  <option value="VIB|VIB">VIB</option>
+                  <option value="SHB|SHB">SHB</option>
+                  <option value="LPB|LPBank">LPBank</option>
+                  <option value="OCB|OCB">OCB</option>
+                  <option value="SCB|SCB">SCB</option>
+                  <option value="SEA|SeABank">SeABank</option>
+                  <option value="PVC|PVcomBank">PVcomBank</option>
+                  <option value="NAB|Nam A Bank">Nam A Bank</option>
+                  <option value="VCC|Bảo Việt Bank">Bảo Việt Bank</option>
+                  <option value="ABB|ABBANK">ABBANK</option>
+                  <option value="BAC|BAC A BANK">BAC A BANK</option>
+                  <option value="BVB|BaoVietBank">BaoVietBank</option>
+                  <option value="CBB|CBBank">CBBank</option>
+                  <option value="DAB|DongABank">DongABank</option>
+                  <option value="EIB|Eximbank">Eximbank</option>
+                  <option value="GPB|GPBank">GPBank</option>
+                  <option value="HKB|Hong Leong Bank">Hong Leong Bank</option>
+                  <option value="IVB|Indovina Bank">Indovina Bank</option>
+                  <option value="KLB|KienLongBank">KienLongBank</option>
+                  <option value="LVP|LienVietPostBank">LienVietPostBank</option>
+                  <option value="MSB|MSB">MSB</option>
+                  <option value="NCB|NCB">NCB</option>
+                  <option value="NVB|NaviBank">NaviBank</option>
+                  <option value="PBVN|Public Bank">Public Bank</option>
+                  <option value="PGB|PG Bank">PG Bank</option>
+                  <option value="SGB|SaigonBank">SaigonBank</option>
+                  <option value="STB|Sacombank">Sacombank</option>
+                  <option value="UOB|United Overseas Bank">United Overseas Bank</option>
+                  <option value="VAB|VietABank">VietABank</option>
+                  <option value="VBB|VietBank">VietBank</option>
+                  <option value="VCA|VietCapitalBank">VietCapitalBank</option>
+                  <option value="VRB|Vietnam-Russia Bank">Vietnam-Russia Bank</option>
+                  <option value="WOO|Woori Bank">Woori Bank</option>
+                </select>
+              </div>
+              <div style="margin-bottom:12px">
+                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Số tài khoản <span style="color:#be1e2d">*</span></label>
+                <input type="text" id="qrAccount" value="1012345678" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+              </div>
+              <div style="margin-bottom:12px">
+                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Chủ tài khoản <span style="color:#be1e2d">*</span></label>
+                <input type="text" id="qrHolder" value="NGUYỄN VĂN AN" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+              </div>
+              <div style="margin-bottom:12px">
+                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Số tiền (VNĐ) <span style="color:#be1e2d">*</span></label>
+                <input type="text" id="qrAmount" value="500,000" oninput="formatQrAmount(this)" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+              </div>
+              <div style="margin-bottom:12px">
+                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Nội dung chuyển khoản <span style="color:#be1e2d">*</span></label>
+                <input type="text" id="qrContent" value="Nộp BHXH tháng 7/2026 - 0123456789" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+              </div>
+              <div style="margin-bottom:12px">
+                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Kích thước QR</label>
+                <select id="qrSize" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;background:#fff">
+                  <option value="180">Nhỏ (180x180)</option>
+                  <option value="240" selected>Vừa (240x240)</option>
+                  <option value="300">Lớn (300x300)</option>
+                </select>
+              </div>
+              <button class="admin-btn admin-btn-primary" onclick="generateQR()"><i class="bi bi-qr-code"></i> Tạo mã QR</button>
+              <button class="admin-btn admin-btn-success" onclick="downloadQR()" id="qrDownloadBtn" style="display:none;margin-left:8px"><i class="bi bi-download"></i> Tải xuống</button>
+              <div id="qrError" style="color:#be1e2d;font-size:12px;margin-top:8px;display:none"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+              <div id="qrPreview" style="border:2px dashed #d6dde8;border-radius:8px;padding:16px;text-align:center;min-height:260px;display:flex;align-items:center;justify-content:center;width:100%">
+                <div style="color:#96a1b4;font-size:13px"><i class="bi bi-qr-code" style="font-size:48px;display:block;margin-bottom:8px;opacity:0.4"></i>Nhập thông tin và nhấn "Tạo mã QR"</div>
+              </div>
+              <div id="qrPaymentInfo" style="font-size:12px;color:#555;width:100%;display:none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SETTINGS ===== -->
+      <div class="admin-section" id="section-settings">
+        <div class="admin-card">
+          <h3><i class="bi bi-gear"></i> Cài đặt hệ thống</h3>
+          <div style="max-width:500px">
+            <div style="margin-bottom:16px"><label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px">Tên hệ thống</label><input type="text" value="BẢO HIỂM XÃ HỘI VIỆT NAM" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px"></div>
+            <div style="margin-bottom:16px"><label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px">Email hỗ trợ</label><input type="email" value="support@baohiemxahoi.vn" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px"></div>
+            <div style="margin-bottom:16px"><label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px">Số điện thoại hỗ trợ</label><input type="text" value="1900 9068" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px"></div>
+            <div style="margin-bottom:16px"><label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px">Địa chỉ</label><input type="text" value="Số 7, Nguyễn Cảnh Hoan, Quận Cầu Giấy, Hà Nội" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px"></div>
+            <div style="margin-bottom:16px"><label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px">Trạng thái hệ thống</label>
+              <select style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;background:#fff">
+                <option>Đang hoạt động</option><option>Bảo trì</option><option>Tạm dừng</option>
+              </select>
+            </div>
+            <button class="admin-btn admin-btn-primary" onclick="showToast('Đã lưu cài đặt!', 'success')"><i class="bi bi-check-lg"></i> Lưu thay đổi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== APPOINTMENTS ===== -->
+      <div class="admin-section" id="section-appointments">
+        <div class="admin-card">
+          <h3><i class="bi bi-calendar-check"></i> Quản lý lịch hẹn</h3>
+          <div class="admin-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+            <div class="admin-stat-card" style="padding:14px"><div class="info"><div class="label">Tổng lịch hẹn</div><div class="value" id="apptTotal" style="color:#042c6a">0</div></div></div>
+            <div class="admin-stat-card" style="padding:14px"><div class="info"><div class="label">Chờ xác nhận</div><div class="value" id="apptPending" style="color:#b06a00">0</div></div></div>
+            <div class="admin-stat-card" style="padding:14px"><div class="info"><div class="label">Đã xác nhận</div><div class="value" id="apptConfirmed" style="color:#0a7a2a">0</div></div></div>
+            <div class="admin-stat-card" style="padding:14px"><div class="info"><div class="label">Đã hủy</div><div class="value" id="apptCancelled" style="color:#be1e2d">0</div></div></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="admin-table">
+              <thead>
+                <tr><th>ID</th><th>Họ tên</th><th>Điện thoại</th><th>Ngày hẹn</th><th>Giờ</th><th>Dịch vụ</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr>
+              </thead>
+              <tbody id="apptTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CHAT SUPPORT ===== -->
+      <div class="admin-section" id="section-chat">
+        <div class="admin-card">
+          <h3><i class="bi bi-chat-dots"></i> Hỗ trợ trực tuyến</h3>
+          <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;min-height:400px">
+            <div style="border:1px solid #d6dde8;border-radius:8px;overflow-y:auto;max-height:500px">
+              <div style="padding:10px;background:#f5f7fa;font-weight:700;font-size:13px;border-bottom:1px solid #d6dde8;color:#042c6a">Danh sách hội thoại</div>
+              <div id="chatConversationList"></div>
+            </div>
+            <div style="border:1px solid #d6dde8;border-radius:8px;display:flex;flex-direction:column;max-height:500px">
+              <div style="padding:10px;background:#f5f7fa;font-weight:700;font-size:13px;border-bottom:1px solid #d6dde8;color:#042c6a" id="chatDetailHeader">Chọn hội thoại để xem</div>
+              <div id="chatMessagesAdmin" style="flex:1;overflow-y:auto;padding:10px;background:#fafbfc;display:flex;flex-direction:column;gap:8px"></div>
+              <div style="padding:10px;border-top:1px solid #d6dde8;display:flex;gap:8px">
+                <input type="text" id="adminChatInput" placeholder="Nhập tin nhắn..." style="flex:1;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+                <button class="admin-btn admin-btn-primary" onclick="adminSendReply()"><i class="bi bi-send-fill"></i> Gửi</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast-notification"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+<script>
+// ===== UTILITY =====
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast-notification ' + (type || 'info');
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+
+// ===== CLOCK =====
+function updateClock() {
+  var d = new Date();
+  var opts = { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false };
+  document.getElementById('currentDateTime').textContent = d.toLocaleDateString('vi-VN', opts);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ===== SIDEBAR =====
+document.querySelectorAll('.admin-sb-item[data-section]').forEach(function(item) {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('.admin-sb-item').forEach(function(s) { s.classList.remove('active'); });
+    item.classList.add('active');
+    var section = item.dataset.section;
+    document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById('section-' + section).classList.add('active');
+    document.getElementById('pageTitle').textContent = item.textContent.trim();
+  });
+});
+
+// ===== DASHBOARD =====
+fetch('/api/admin/dashboard')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var s = data.stats;
+    document.getElementById('statTotalUsers').textContent = s.totalUsers.toLocaleString('vi-VN');
+    document.getElementById('statActiveUsers').textContent = s.activeUsers.toLocaleString('vi-VN');
+    document.getElementById('statPending').textContent = s.pendingApprovals.toLocaleString('vi-VN');
+    document.getElementById('statToday').textContent = s.todayRegistrations;
+    document.getElementById('statSubmissions').textContent = s.totalSubmissions.toLocaleString('vi-VN');
+    document.getElementById('statProcessed').textContent = s.processedSubmissions.toLocaleString('vi-VN');
+
+    // Chart
+    var chart = document.getElementById('regChart');
+    data.registrationsByMonth.forEach(function(m) {
+      var bar = document.createElement('div');
+      bar.className = 'bar';
+      var max = Math.max.apply(null, data.registrationsByMonth.map(function(x) { return x.count; }));
+      bar.style.height = Math.max(4, (m.count / max) * 180) + 'px';
+      bar.innerHTML = '<div class="bar-label">' + m.month + '</div>';
+      bar.title = m.month + ': ' + m.count;
+      chart.appendChild(bar);
+    });
+
+    // Activity
+    var list = document.getElementById('activityList');
+    data.recentActivity.forEach(function(a) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="time">' + a.time + '</span><span class="dot ' + a.type + '"></span><span>' + a.text + '</span>';
+      list.appendChild(li);
+    });
+  });
+
+// ===== USERS =====
+var allUsers = [];
+function loadUsers() {
+  fetch('/api/admin/users')
+    .then(function(r) { return r.json(); })
+    .then(function(users) {
+      allUsers = users;
+      document.getElementById('userBadge').textContent = users.length;
+      document.getElementById('regBadge').textContent = users.filter(function(u) { return u.status === 'pending'; }).length;
+      filterUsers();
+    });
+}
+loadUsers();
+
+function filterUsers() {
+  var q = document.getElementById('userSearch').value.toLowerCase();
+  var status = document.getElementById('userStatusFilter').value;
+  var type = document.getElementById('userTypeFilter').value;
+  var filtered = allUsers.filter(function(u) {
+    if (status && u.status !== status) return false;
+    if (type && u.accountType !== type) return false;
+    if (q) {
+      var match = u.fullName.toLowerCase().indexOf(q) > -1 ||
+                  u.bhxhCode.indexOf(q) > -1 ||
+                  u.cccd.indexOf(q) > -1 ||
+                  u.phone.indexOf(q) > -1;
+      if (!match) return false;
+    }
+    return true;
+  });
+  renderUsers(filtered);
+}
+
+function renderUsers(users) {
+  var tbody = document.getElementById('userTableBody');
+  tbody.innerHTML = users.map(function(u) {
+    var statusClass = u.status === 'approved' ? 'approved' : u.status === 'pending' ? 'pending' : 'rejected';
+    var statusText = u.status === 'approved' ? 'Đã duyệt' : u.status === 'pending' ? 'Chờ duyệt' : 'Từ chối';
+    var typeText = u.accountType === 'individual' ? 'Cá nhân' : 'Tổ chức';
+    return '<tr>' +
+      '<td>' + u.id + '</td>' +
+      '<td><strong>' + u.fullName + '</strong></td>' +
+      '<td>' + u.bhxhCode + '</td>' +
+      '<td>' + u.cccd + '</td>' +
+      '<td>' + u.phone + '</td>' +
+      '<td><span class="admin-badge ' + (u.accountType === 'individual' ? 'approved' : 'pending') + '">' + typeText + '</span></td>' +
+      '<td><span class="admin-badge ' + statusClass + '">' + statusText + '</span></td>' +
+      '<td>' + u.registeredAt + '</td>' +
+      '<td>' +
+        (u.status === 'pending' ? '<button class="admin-btn admin-btn-success admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'approved\')"><i class="bi bi-check"></i> Duyệt</button> <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'rejected\')"><i class="bi bi-x"></i> Từ chối</button>' : '<button class="admin-btn admin-btn-ghost admin-btn-sm" onclick="showToast(\'Xem chi tiết người dùng\',\'info\')"><i class="bi bi-eye"></i> Xem</button>') +
+      '</td></tr>';
+  }).join('');
+}
+
+function updateUserStatus(id, status) {
+  fetch('/api/admin/users/' + id + '/status', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: status })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      showToast('Cập nhật trạng thái thành công!', 'success');
+      loadUsers();
+    }
+  });
+}
+
+// ===== REGISTRATIONS =====
+function loadRegistrations() {
+  fetch('/api/admin/stats')
+    .then(function(r) { return r.json(); })
+    .then(function(s) {
+      document.getElementById('regPendingCount').textContent = s.pending;
+      document.getElementById('regApprovedCount').textContent = s.approved;
+      document.getElementById('regRejectedCount').textContent = s.rejected;
+      document.getElementById('regTotalCount').textContent = s.total;
+    });
+  fetch('/api/admin/users')
+    .then(function(r) { return r.json(); })
+    .then(function(users) {
+      var tbody = document.getElementById('regTableBody');
+      tbody.innerHTML = users.filter(function(u) { return u.status === 'pending'; }).map(function(u) {
+        return '<tr>' +
+          '<td>' + u.id + '</td>' +
+          '<td><strong>' + u.fullName + '</strong></td>' +
+          '<td>' + u.bhxhCode + '</td>' +
+          '<td>' + u.cccd + '</td>' +
+          '<td>' + u.phone + '</td>' +
+          '<td>' + (u.accountType === 'individual' ? 'Cá nhân' : 'Tổ chức') + '</td>' +
+          '<td><span class="admin-badge pending">Chờ duyệt</span></td>' +
+          '<td>' + u.registeredAt + '</td>' +
+          '<td><button class="admin-btn admin-btn-success admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'approved\')"><i class="bi bi-check"></i> Duyệt</button> <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'rejected\')"><i class="bi bi-x"></i> Từ chối</button></td></tr>';
+      }).join('');
+      if (users.filter(function(u) { return u.status === 'pending'; }).length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#96a1b4;padding:30px">Không có đăng ký chờ duyệt</td></tr>';
+      }
+    });
+}
+loadRegistrations();
+
+// ===== APPOINTMENTS =====
+function loadAppointments() {
+  fetch('/api/appointments')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var s = data.stats;
+      document.getElementById('apptTotal').textContent = s.total;
+      document.getElementById('apptPending').textContent = s.pending;
+      document.getElementById('apptConfirmed').textContent = s.confirmed;
+      document.getElementById('apptCancelled').textContent = s.cancelled;
+      document.getElementById('apptBadge').textContent = s.pending;
+
+      var tbody = document.getElementById('apptTableBody');
+      var svcLabels = { kekhai: 'Kê khai BHXH', nop: 'Nộp BHXH điện tử', 'tra-cuu': 'Tra cứu', 'cap-so': 'Cấp sổ/thẻ', 'huong-dan': 'Hướng dẫn', khac: 'Khác' };
+      tbody.innerHTML = data.appointments.map(function(a) {
+        var sc = a.status === 'confirmed' ? 'approved' : a.status === 'pending' ? 'pending' : 'rejected';
+        var st = a.status === 'confirmed' ? 'Đã xác nhận' : a.status === 'pending' ? 'Chờ xác nhận' : 'Đã hủy';
+        return '<tr>' +
+          '<td>' + a.id + '</td>' +
+          '<td><strong>' + a.fullName + '</strong></td>' +
+          '<td>' + a.phone + '</td>' +
+          '<td>' + a.date + '</td>' +
+          '<td>' + a.timeSlot + '</td>' +
+          '<td>' + (svcLabels[a.service] || a.service) + '</td>' +
+          '<td><span class="admin-badge ' + sc + '">' + st + '</span></td>' +
+          '<td>' + a.createdAt + '</td>' +
+          '<td>' +
+            (a.status === 'pending' ? '<button class="admin-btn admin-btn-success admin-btn-sm" onclick="updateApptStatus(' + a.id + ',\'confirmed\')"><i class="bi bi-check"></i> Xác nhận</button> <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="updateApptStatus(' + a.id + ',\'cancelled\')"><i class="bi bi-x"></i> Hủy</button>' : '<button class="admin-btn admin-btn-ghost admin-btn-sm" onclick="showToast(\'Xem chi tiết lịch hẹn\',\'info\')"><i class="bi bi-eye"></i> Xem</button>') +
+          '</td></tr>';
+      }).join('');
+    });
+}
+loadAppointments();
+
+function updateApptStatus(id, status) {
+  fetch('/api/appointments/' + id + '/status', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: status })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) { showToast('Cập nhật trạng thái lịch hẹn thành công!', 'success'); loadAppointments(); }
+  });
+}
+
+// ===== CHAT =====
+var currentConvId = null;
+function loadChatConversations() {
+  fetch('/api/chat/conversations')
+    .then(function(r) { return r.json(); })
+    .then(function(convs) {
+      var active = convs.filter(function(c) { return c.status === 'active'; });
+      document.getElementById('chatBadge').textContent = active.length;
+
+      var list = document.getElementById('chatConversationList');
+      list.innerHTML = convs.map(function(c) {
+        var lastMsg = c.messages.length > 0 ? c.messages[c.messages.length - 1].text : '';
+        return '<div class="chat-conv-item" data-id="' + c.id + '" style="padding:10px 12px;border-bottom:1px solid #f0f3f8;cursor:pointer;font-size:13px">' +
+          '<div style="font-weight:700;color:#042c6a">' + c.userName + (c.unread > 0 ? ' <span style="color:#c62828">(' + c.unread + ')</span>' : '') + '</div>' +
+          '<div style="color:#7b8aa5;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + lastMsg.substring(0, 50) + '</div>' +
+          '</div>';
+      }).join('');
+
+      document.querySelectorAll('.chat-conv-item').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var id = parseInt(this.dataset.id);
+          showChatConversation(id, convs);
+        });
+      });
+    });
+}
+loadChatConversations();
+
+function showChatConversation(id, convs) {
+  currentConvId = id;
+  var conv = convs.find(function(c) { return c.id === id; });
+  if (!conv) return;
+
+  document.getElementById('chatDetailHeader').textContent = 'Hội thoại với: ' + conv.userName + ' (CCCD: ' + (conv.idCard || 'N/A') + ', ĐT: ' + (conv.phone || 'N/A') + ')';
+
+  var container = document.getElementById('chatMessagesAdmin');
+  container.innerHTML = conv.messages.map(function(m) {
+    var isAdmin = m.from === 'admin';
+    return '<div style="max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;' +
+      (isAdmin ? 'background:#042c6a;color:#fff;align-self:flex-start;border-bottom-left-radius:4px' : 'background:#e3f0fd;color:#042c6a;align-self:flex-end;border-bottom-right-radius:4px') +
+      '">' + m.text + '<span style="font-size:10px;opacity:0.6;display:block;margin-top:4px">' + m.time + '</span></div>';
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function adminSendReply() {
+  if (!currentConvId) { showToast('Vui lòng chọn hội thoại!', 'error'); return; }
+  var input = document.getElementById('adminChatInput');
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  fetch('/api/chat/admin/reply', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ conversationId: currentConvId, text: text })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      showToast('Tin nhắn đã được gửi!', 'success');
+      loadChatConversations();
+      setTimeout(function() {
+        var convs = document.querySelectorAll('.chat-conv-item');
+        var el = Array.from(convs).find(function(e) { return parseInt(e.dataset.id) === currentConvId; });
+        if (el) el.click();
+      }, 200);
+    }
+  });
+}
+
+document.getElementById('adminChatInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') adminSendReply();
+});
+
+// ===== ADMIN AUTH =====
+var adminToken = localStorage.getItem('adminToken');
+
+function checkAdminAuth() {
+  if (!adminToken) { showLoginOverlay(); return; }
+  fetch('/api/admin/check', { headers: { 'Authorization': 'Bearer ' + adminToken } })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.authenticated) { hideLoginOverlay(); } else { showLoginOverlay(); }
+    });
+}
+
+function showLoginOverlay() {
+  var o = document.getElementById('adminLoginOverlay');
+  if (o) o.style.display = 'flex';
+  document.getElementById('adminLayout').style.opacity = '0.2';
+  document.getElementById('adminLayout').style.pointerEvents = 'none';
+}
+
+function hideLoginOverlay() {
+  var o = document.getElementById('adminLoginOverlay');
+  if (o) o.style.display = 'none';
+  document.getElementById('adminLayout').style.opacity = '';
+  document.getElementById('adminLayout').style.pointerEvents = '';
+}
+
+function adminLogin() {
+  var u = document.getElementById('adminLoginUser').value.trim();
+  var p = document.getElementById('adminLoginPass').value.trim();
+  var err = document.getElementById('adminLoginError');
+  if (!u || !p) { err.textContent = 'Vui lòng nhập tài khoản và mật khẩu!'; err.style.display = 'block'; return; }
+  fetch('/api/admin/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: u, password: p })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        adminToken = data.token;
+        localStorage.setItem('adminToken', adminToken);
+        hideLoginOverlay();
+        showToast('Đăng nhập thành công!', 'success');
+        location.reload();
+      } else {
+        err.textContent = data.error || 'Đăng nhập thất bại!';
+        err.style.display = 'block';
+      }
+    });
+}
+
+function adminLogout() {
+  fetch('/api/admin/logout', { method: 'POST' })
+    .then(function() {
+      localStorage.removeItem('adminToken');
+      adminToken = null;
+      showLoginOverlay();
+      showToast('Đã đăng xuất!', 'info');
+    });
+}
+
+document.getElementById('adminLoginPass').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') adminLogin();
+});
+
+checkAdminAuth();
+
+// ===== QR CODE GENERATOR =====
+var qrCodeInstance = null;
+
+function formatQrAmount(input) {
+  var v = input.value.replace(/[^0-9]/g, '');
+  if (v) input.value = parseInt(v).toLocaleString('vi-VN');
+  else input.value = '';
+}
+
+// ===== AGENCY TREE =====
+var agencyTreeData = [];
+function loadAgencyTree() {
+  fetch('/api/Agencies/tree')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      agencyTreeData = data;
+      renderAgencyTree(data, '');
+    });
+}
+function renderAgencyTree(nodes, filterText) {
+  var container = document.getElementById('agencyTreeContainer');
+  if (!nodes || nodes.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:#96a1b4;font-size:13px"><i class="bi bi-inbox" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.4"></i>Không có dữ liệu</div>';
+    return;
+  }
+  var html = '<ul style="list-style:none;padding:0;margin:0">';
+  nodes.forEach(function(n) {
+    var match = !filterText || n.name.toLowerCase().indexOf(filterText.toLowerCase()) > -1 || (n.code && n.code.toLowerCase().indexOf(filterText.toLowerCase()) > -1);
+    var hasVisibleChild = n.children && n.children.some(function(c) { return !filterText || c.name.toLowerCase().indexOf(filterText.toLowerCase()) > -1 || (c.code && c.code.toLowerCase().indexOf(filterText.toLowerCase()) > -1); });
+    if (filterText && !match && !hasVisibleChild) return;
+    var expandIcon = n.children && n.children.length ? '<i class="bi bi-chevron-down" style="font-size:10px;margin-right:4px;cursor:pointer" onclick="toggleAgencyNode(this)"></i>' : '<i class="bi bi-dot" style="font-size:10px;margin-right:4px;color:#96a1b4"></i>';
+    html += '<li style="padding:4px 0">' + expandIcon + '<span style="' + (n.children && n.children.length ? 'font-weight:600' : '') + ';font-size:13px;color:' + (n.children && n.children.length ? '#042c6a' : '#333') + '">' + n.name + '</span>' + (n.code ? ' <span style="font-size:11px;color:#96a1b4">(' + n.code + ')</span>' : '') + '</li>';
+    if (filterText && match) {
+      html += '<ul style="list-style:none;padding-left:20px;margin:0">';
+      (n.children || []).forEach(function(c) {
+        var cmatch = !filterText || c.name.toLowerCase().indexOf(filterText.toLowerCase()) > -1 || (c.code && c.code.toLowerCase().indexOf(filterText.toLowerCase()) > -1);
+        if (!cmatch) return;
+        html += '<li style="padding:3px 0"><i class="bi bi-dot" style="font-size:10px;margin-right:4px;color:#96a1b4"></i><span style="font-size:13px;color:#555">' + c.name + '</span>' + (c.code ? ' <span style="font-size:11px;color:#96a1b4">(' + c.code + ')</span>' : '') + '</li>';
+      });
+      html += '</ul>';
+    } else if (n.children && n.children.length && (!filterText || hasVisibleChild)) {
+      html += '<ul style="list-style:none;padding-left:20px;margin:0;overflow:hidden;transition:max-height .25s">';
+      html += renderChildrenHtml(n.children, filterText);
+      html += '</ul>';
+    }
+  });
+  html += '</ul>';
+  container.innerHTML = html;
+}
+function renderChildrenHtml(children, filterText) {
+  var h = '';
+  children.forEach(function(c) {
+    var cmatch = !filterText || c.name.toLowerCase().indexOf(filterText.toLowerCase()) > -1 || (c.code && c.code.toLowerCase().indexOf(filterText.toLowerCase()) > -1);
+    var hasGrandchild = c.children && c.children.some(function(gc) { return !filterText || gc.name.toLowerCase().indexOf(filterText.toLowerCase()) > -1; });
+    if (filterText && !cmatch && !hasGrandchild) return;
+    var expandIcon = c.children && c.children.length ? '<i class="bi bi-chevron-down" style="font-size:10px;margin-right:4px;cursor:pointer" onclick="toggleAgencyNode(this)"></i>' : '<i class="bi bi-dot" style="font-size:10px;margin-right:4px;color:#96a1b4"></i>';
+    h += '<li style="padding:3px 0">' + expandIcon + '<span style="font-size:13px;color:#555' + (c.children && c.children.length ? ';font-weight:600;color:#042c6a' : '') + '">' + c.name + '</span>' + (c.code ? ' <span style="font-size:11px;color:#96a1b4">(' + c.code + ')</span>' : '') + '</li>';
+    if (filterText && cmatch && c.children) {
+      h += '<ul style="list-style:none;padding-left:20px;margin:0">';
+      c.children.forEach(function(gc) {
+        h += '<li style="padding:2px 0"><i class="bi bi-dot" style="font-size:10px;margin-right:4px;color:#96a1b4"></i><span style="font-size:12px;color:#777">' + gc.name + '</span>' + (gc.code ? ' <span style="font-size:11px;color:#96a1b4">(' + gc.code + ')</span>' : '') + '</li>';
+      });
+      h += '</ul>';
+    } else if (c.children && c.children.length) {
+      h += '<ul style="list-style:none;padding-left:20px;margin:0">';
+      h += renderChildrenHtml(c.children, filterText);
+      h += '</ul>';
+    }
+  });
+  return h;
+}
+function toggleAgencyNode(el) {
+  var ul = el.parentElement.querySelector('ul');
+  if (ul) {
+    var hidden = ul.style.display === 'none';
+    ul.style.display = hidden ? '' : 'none';
+    el.className = hidden ? 'bi bi-chevron-down' : 'bi bi-chevron-right';
+  }
+}
+function filterAgencyTree() {
+  var q = document.getElementById('agencySearchInput').value.trim();
+  renderAgencyTree(agencyTreeData, q);
+}
+
+function generateQR() {
+  var bankVal = document.getElementById('qrBank').value;
+  var bankBin = bankVal.split('|')[0];
+  var bankName = bankVal.split('|')[1];
+  var account = document.getElementById('qrAccount').value.trim();
+  var holder = document.getElementById('qrHolder').value.trim();
+  var amountRaw = document.getElementById('qrAmount').value.replace(/[^0-9]/g, '');
+  var content = document.getElementById('qrContent').value.trim();
+  var size = parseInt(document.getElementById('qrSize').value);
+
+  var errorEl = document.getElementById('qrError');
+  errorEl.style.display = 'none';
+
+  if (!account || !holder || !amountRaw || !content) {
+    errorEl.textContent = 'Vui lòng nhập đầy đủ thông tin!';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  // VietQR format (NAPAS standard)
+  // 000201010212... QR code for bank transfer
+  var qrData = [
+    '000201010212',
+    '38' + bankBin.length.toString().padStart(2, '0') + bankBin,
+    '30' + account.length.toString().padStart(2, '0') + account,
+    '5802VN',
+    '62' + ('08' + content.length.toString().padStart(2, '0') + content).length.toString().padStart(2, '0') + '08' + content.length.toString().padStart(2, '0') + content,
+    '6304',
+  ].join('');
+
+  var preview = document.getElementById('qrPreview');
+  preview.innerHTML = '';
+  preview.style.border = 'none';
+  preview.style.padding = '0';
+
+  // BHXH-branded QR card
+  var qrCard = document.createElement('div');
+  qrCard.style.cssText =
+    'background:linear-gradient(180deg,#042c6a 0%,#0a1f42 100%);border-radius:12px;' +
+    'padding:24px;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;' +
+    'box-shadow:0 4px 20px rgba(4,44,106,0.25);position:relative;overflow:hidden';
+
+  // Decorative top stripe
+  var stripe = document.createElement('div');
+  stripe.style.cssText = 'position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#5ed6fc,#0372b6,#5ed6fc)';
+  qrCard.appendChild(stripe);
+
+  // BHXH header
+  var logoRow = document.createElement('div');
+  logoRow.style.cssText = 'display:flex;align-items:center;gap:10px;z-index:1;width:100%';
+  logoRow.innerHTML =
+    '<img src="/images/logonew.png" alt="BHXH" style="width:32px;height:32px;border-radius:4px">' +
+    '<div style="text-align:left">' +
+    '<div style="color:#fff;font-size:11px;font-weight:300;letter-spacing:0.5px">BẢO HIỂM XÃ HỘI</div>' +
+    '<div style="color:#5ed6fc;font-size:13px;font-weight:800;letter-spacing:0.8px;margin-top:-1px">VIỆT NAM</div>' +
+    '</div>';
+  qrCard.appendChild(logoRow);
+
+  // QR Code wrapper (white background for QR)
+  var qrWrap = document.createElement('div');
+  qrWrap.style.cssText =
+    'background:#fff;border-radius:8px;padding:12px;' +
+    'box-shadow:0 2px 12px rgba(0,0,0,0.15);z-index:1';
+  var canvas = document.createElement('canvas');
+  canvas.id = 'qrCanvas';
+  canvas.style.display = 'block';
+  qrWrap.appendChild(canvas);
+  qrCard.appendChild(qrWrap);
+
+  // Info text below QR
+  var infoText = document.createElement('div');
+  infoText.style.cssText = 'text-align:center;z-index:1';
+  infoText.innerHTML =
+    '<div style="color:rgba(255,255,255,0.5);font-size:9px;letter-spacing:1px;text-transform:uppercase">QUÉT MÃ QR ĐỂ CHUYỂN KHOẢN</div>';
+  qrCard.appendChild(infoText);
+
+  preview.appendChild(qrCard);
+
+  try {
+    qrCodeInstance = new QRCode(canvas, {
+      text: qrData,
+      width: size,
+      height: size,
+      colorDark: '#042c6a',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H,
+    });
+
+    document.getElementById('qrDownloadBtn').style.display = 'inline-flex';
+
+    var infoEl = document.getElementById('qrPaymentInfo');
+    infoEl.style.display = 'block';
+    infoEl.innerHTML =
+      '<div style="background:linear-gradient(135deg,#f5f7fa,#fff);border-radius:8px;padding:14px;border:1px solid #eaeef6">' +
+      '<div style="font-weight:700;color:#042c6a;margin-bottom:8px;font-size:13px"><i class="bi bi-info-circle me-1"></i>Thông tin chuyển khoản</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12px">' +
+      '<span style="color:#7b8aa5">Ngân hàng:</span><span style="font-weight:600;color:#042c6a">' + bankName + '</span>' +
+      '<span style="color:#7b8aa5">Số tài khoản:</span><span style="font-weight:600;color:#042c6a">' + account + '</span>' +
+      '<span style="color:#7b8aa5">Chủ tài khoản:</span><span style="font-weight:600;color:#042c6a">' + holder.toUpperCase() + '</span>' +
+      '<span style="color:#7b8aa5">Số tiền:</span><span style="font-weight:700;color:#be1e2d">' + parseInt(amountRaw).toLocaleString('vi-VN') + ' VNĐ</span>' +
+      '<span style="color:#7b8aa5;grid-column:1/-1">Nội dung:</span><span style="font-weight:600;grid-column:1/-1;color:#042c6a">' + content + '</span>' +
+      '</div></div>';
+
+    showToast('Đã tạo mã QR chuyển khoản thành công!', 'success');
+  } catch (e) {
+    errorEl.textContent = 'Lỗi tạo mã QR: ' + e.message;
+    errorEl.style.display = 'block';
+  }
+}
+
+function downloadQR() {
+  var canvas = document.getElementById('qrCanvas');
+  if (!canvas) return;
+  var link = document.createElement('a');
+  link.download = 'QR_BANK_' + document.getElementById('qrAccount').value.trim() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+checkAdminAuth();
+</script>
+
+<!-- ADMIN LOGIN OVERLAY -->
+<div id="adminLoginOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:32px;width:380px;box-shadow:0 8px 40px rgba(0,0,0,0.3)">
+    <div style="text-align:center;margin-bottom:24px">
+      <img src="/images/logonew.png" alt="BHXH" style="width:56px;height:56px;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700;color:#042c6a;text-transform:uppercase;letter-spacing:0.5px">Bảo hiểm xã hội Việt Nam</div>
+      <div style="font-size:12px;color:#7b8aa5;margin-top:4px">Quản trị hệ thống</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Tên đăng nhập</label>
+      <input type="text" id="adminLoginUser" value="admin" style="width:100%;padding:10px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:14px;outline:none;box-sizing:border-box" placeholder="Nhập tên đăng nhập">
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Mật khẩu</label>
+      <input type="password" id="adminLoginPass" value="REDACTED" style="width:100%;padding:10px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:14px;outline:none;box-sizing:border-box" placeholder="Nhập mật khẩu">
+    </div>
+    <div id="adminLoginError" style="color:#be1e2d;font-size:12px;margin-bottom:10px;display:none"></div>
+    <button onclick="adminLogin()" style="width:100%;padding:10px;background:linear-gradient(135deg,#042c6a,#0372b6);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer"><i class="bi bi-box-arrow-in-right me-1"></i> ĐĂNG NHẬP</button>
+  </div>
+</div>
+
+</body>
+</html>
