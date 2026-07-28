@@ -74,16 +74,16 @@
         <form class="tk-form" id="registerForm" onsubmit="return handleRegisterSubmit(event)">
           <input type="hidden" name="AccountType" value="individual" />
           <div class="tk-header">
-            <div class="tk-photo" id="photoBox" onclick="document.getElementById('photoInput').click()">
-              <div class="tk-photo-cap">Ảnh chân dung 4x6<span class="req">*</span></div>
-              <div class="tk-photo-box">
-                <i class="bi bi-camera" style="font-size:36px;color:#b0b6bd"></i>
-              </div>
-              <input type="file" id="photoInput" accept="image/*" hidden onchange="previewUpload(this,'photoBox')" />
-            </div>
             <div class="tk-title-block">
               <h2 class="tk-title">TỜ KHAI</h2>
               <p class="tk-sub">Đăng ký sử dụng, điều chỉnh thông tin và sử dụng phương thức giao dịch điện tử trong lĩnh vực bảo hiểm xã hội</p>
+            </div>
+            <div class="tk-photo" id="photoBox" onclick="document.getElementById('photoInput').click()">
+              <div class="tk-photo-cap">Ảnh chân dung 4x6<span class="req">*</span></div>
+              <div class="tk-photo-box" id="photoBoxInner">
+                <i class="bi bi-camera" style="font-size:36px;color:#b0b6bd"></i>
+              </div>
+              <input type="file" id="photoInput" accept="image/*" hidden onchange="previewUpload(this,'photoBoxInner')" />
             </div>
           </div>
 
@@ -150,7 +150,7 @@
                   <input id="provinceSelect" class="tk-inp" placeholder="Chọn tỉnh" autocomplete="off" readonly type="text" onclick="openSmartSelect('provinceSelect', ['Hà Nội', 'TP. Hồ Chí Minh', 'Hải Phòng', 'Đà Nẵng', 'Cần Thơ', 'An Giang', 'Bà Rịa - Vũng Tàu', 'Bắc Giang', 'Bắc Kạn', 'Bạc Liêu', 'Bắc Ninh', 'Bến Tre', 'Bình Định', 'Bình Dương', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp', 'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Tĩnh', 'Hải Dương', 'Hậu Giang', 'Hòa Bình', 'Hưng Yên', 'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu', 'Lâm Đồng', 'Lạng Sơn', 'Lào Cai', 'Long An', 'Nam Định', 'Nghệ An', 'Ninh Bình', 'Ninh Thuận', 'Phú Thọ', 'Phú Yên', 'Quảng Bình', 'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh', 'Quảng Trị', 'Sóc Trăng', 'Sơn La', 'Tây Ninh', 'Thái Bình', 'Thái Nguyên', 'Thanh Hóa', 'Thừa Thiên Huế', 'Tiền Giang', 'Trà Vinh', 'Tuyên Quang', 'Vĩnh Long', 'Vĩnh Phúc', 'Yên Bái'], true)" />
                 </div>
                 <div class="ss-wrap">
-                  <input id="wardSelect" class="tk-inp" placeholder="Chọn quận/huyện" autocomplete="off" readonly type="text" onclick="showToast('Chọn quận/huyện', 'info')" />
+                  <input id="wardSelect" class="tk-inp" placeholder="Chọn xã/phường" autocomplete="off" readonly type="text" onclick="showToast('Chọn xã/phường', 'info')" />
                 </div>
               </div>
               <input class="tk-inp tk-mt8" placeholder="Số nhà, ngõ (ngách, hẻm), đường phố, tổ (thôn, xóm, ấp)" type="text" id="Street" name="Street" />
@@ -187,7 +187,7 @@
               <label class="tk-lbl">Chọn ngân hàng</label>
               <div class="tk-inp-wrap">
                 <div class="ss-wrap" style="width:100%">
-                  <input type="text" id="bankSearchInput" class="tk-inp" placeholder="Tìm kiếm ngân hàng..." autocomplete="off" readonly onclick="openSmartSelect('bankSearchInput', ['Vietcombank', 'Techcombank', 'BIDV', 'VietinBank', 'MB Bank', 'ACB', 'VPBank', 'TPBank', 'Sacombank', 'HDBank', 'VIB', 'SHB', 'MSB', 'SeABank', 'LPBank', 'OCB', 'Nam A Bank', 'PVcomBank', 'SCB', 'Bảo Việt Bank', 'Agribank', 'LienVietPostBank', 'NCB', 'Saigonbank', 'PG Bank', 'GPBank', 'CB Bank', 'Dong A Bank', 'KienLongBank', 'VietBank'], true)" />
+                  <input type="text" id="bankSearchInput" class="tk-inp" placeholder="Tìm kiếm ngân hàng..." autocomplete="off" readonly onclick="openSmartSelect('bankSearchInput', ['Ngân hàng TMCP Ngoại thương Việt Nam - Vietcombank', 'Ngân hàng TMCP Kỹ thương Việt Nam - Techcombank', 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam - BIDV', 'Ngân hàng TMCP Công thương Việt Nam - VietinBank', 'Ngân hàng Nông nghiệp và Phát triển Nông thôn - Agribank', 'Ngân hàng TMCP Quân đội - MB Bank', 'Ngân hàng TMCP Á Châu - ACB', 'Ngân hàng TMCP Việt Nam Thịnh Vượng - VPBank', 'Ngân hàng TMCP Tiên Phong - TPBank', 'Ngân hàng TMCP Sài Gòn Thương Tín - Sacombank', 'Ngân hàng TMCP Phát triển TP HCM - HDBank', 'Ngân hàng TMCP Quốc tế Việt Nam - VIB', 'Ngân hàng TMCP Sài Gòn - Hà Nội - SHB', 'Ngân hàng TMCP Hàng Hải Việt Nam - MSB', 'Ngân hàng TMCP Đông Nam Á - SeABank', 'Ngân hàng TMCP Bưu điện Liên Việt - LPBank', 'Ngân hàng TMCP Phương Đông - OCB', 'Ngân hàng TMCP Nam Á - Nam A Bank', 'Ngân hàng TMCP Đại Chúng Việt Nam - PVcomBank', 'Ngân hàng TMCP Sài Gòn - SCB', 'Ngân hàng TMCP Bảo Việt - Bảo Việt Bank', 'Ngân hàng TMCP Bắc Á - Bac A Bank', 'Ngân hàng TMCP An Bình - ABBANK', 'Ngân hàng TMCP Xăng dầu Petrolimex - PG Bank', 'Ngân hàng TMCP Sài Gòn Công Thương - Saigonbank', 'Ngân hàng TMCP Việt Á - VietABank', 'Ngân hàng TMCP Bản Việt - VietCapitalBank', 'Ngân hàng TMCP Đông Á - Dong A Bank', 'Ngân hàng TMCP Kiên Long - KienLongBank', 'Ngân hàng TMCP Việt Nam Thương Tín - VietBank', 'Ngân hàng TMCP Quốc Dân - NCB', 'Ngân hàng TMCP Dầu khí Toàn cầu - GPBank', 'Ngân hàng TNHH MTV Xây dựng - CBBank', 'Ngân hàng Liên doanh Việt - Nga - VRB', 'Ngân hàng TNHH MTV HSBC Việt Nam', 'Ngân hàng TNHH MTV Standard Chartered Việt Nam', 'Ngân hàng TNHH MTV Citibank Việt Nam', 'Ngân hàng TNHH MTV UOB Việt Nam', 'Ngân hàng TNHH MTV Public Bank Việt Nam', 'Ngân hàng TNHH MTV Hong Leong Việt Nam', 'Ngân hàng TNHH MTV CIMB Việt Nam', 'Ngân hàng TNHH MTV Woori Việt Nam', 'Ngân hàng Liên doanh Indovina - IVB', 'Ngân hàng Chính sách Xã hội - VBSP', 'Ngân hàng Phát triển Việt Nam - VDB', 'Ngân hàng Hợp tác xã Việt Nam - Co-opBank'], true)" />
                 </div>
               </div>
             </div>
@@ -305,6 +305,8 @@
     </div>
     <div class="chat-msgs" id="chatMessages" style="display:none"></div>
     <div class="chat-start-form" id="chatStartForm">
+      <div class="sf-title">Hỗ trợ trực tuyến BHXH</div>
+      <div class="sf-sub">Vui lòng để lại thông tin để bắt đầu trò chuyện với bộ phận hỗ trợ.</div>
       <input type="text" id="chatName" placeholder="Họ và tên *">
       <input type="text" id="chatIdCard" placeholder="Số CCCD *">
       <input type="tel" id="chatPhone" placeholder="Số điện thoại *">
@@ -451,11 +453,11 @@
           input.value = '';
           input.dataset.value = '';
           input.onclick = function() {
-            openSmartSelect('wardSelect', allWards.map(function(w) { return { name: w.level + ' ' + w.name, code: w.code }; }), true);
+            openSmartSelect('wardSelect', allWards.map(function(w) { return { name: w.name, code: w.code }; }), true);
             input.onSelect = function(code, name) { input.dataset.code = code; };
           };
           if (allWards.length > 0) {
-            input.placeholder = 'Chọn quận/huyện';
+            input.placeholder = 'Chọn xã/phường';
           } else {
             input.placeholder = 'Không có dữ liệu';
           }
@@ -505,70 +507,45 @@
       modal.appendChild(box);
       document.body.appendChild(modal);
 
-      // Load agencies
-      fetch('/api/Agencies/tree')
+      // Load provincial agencies (children of BHXH_VN)
+      fetch('/api/Agencies?parentId=BHXH_VN')
         .then(function(r) { return r.json(); })
         .then(function(agencies) {
-          renderAgencyTree(agencies, null, listDiv, 0, filterInput);
+          listDiv.innerHTML = '';
+          if (agencies.length === 0) {
+            listDiv.innerHTML = '<div style="padding:20px;text-align:center;color:#96a1b4">Không có dữ liệu</div>';
+            return;
+          }
+          agencies.forEach(function(a) {
+            var div = document.createElement('div');
+            div.className = 'agency-item';
+            div.style.cssText = 'padding:10px 16px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;transition:background 0.15s';
+            div.innerHTML = '<i class="bi bi-building" style="color:#0372b6;font-size:16px"></i><span style="flex:1">' + a.name + '</span><i class="bi bi-chevron-right" style="color:#bbb;font-size:12px"></i>';
+            div.dataset.id = a.id;
+            div.dataset.name = a.name;
+            div.onmouseenter = function() { this.style.background = '#e3f0fd'; };
+            div.onmouseleave = function() { this.style.background = ''; };
+            div.onclick = function() { selectAgency(a.id, a.name); };
+            listDiv.appendChild(div);
+          });
+
+          filterInput.oninput = function() {
+            var q = this.value.toLowerCase().trim();
+            listDiv.querySelectorAll('.agency-item').forEach(function(item) {
+              item.style.display = item.dataset.name.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+            });
+          };
+        })
+        .catch(function() {
+          listDiv.innerHTML = '<div style="padding:20px;text-align:center;color:#e53935">Lỗi tải dữ liệu</div>';
         });
     }
 
-    function renderAgencyTree(agencies, parentId, container, level, filterInput) {
-      var children = agencies.filter(function(a) { return a.parentId === parentId; });
-      if (children.length === 0) {
-        if (level === 0) container.innerHTML = '<div style="padding:20px;text-align:center;color:#96a1b4">Đang tải...</div>';
-        return;
-      }
-
-      container.innerHTML = '';
-      children.forEach(function(a) {
-        var div = document.createElement('div');
-        div.className = 'agency-tree-item';
-        div.style.cssText = 'padding:8px 16px;padding-left:' + (16 + level * 20) + 'px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #f5f5f5';
-        div.innerHTML = (a.hasChild ? '<i class="bi bi-folder" style="color:#0372b6"></i>' : '<i class="bi bi-building" style="color:#7b8aa5"></i>') + ' ' + a.name;
-        div.dataset.id = a.id;
-        div.dataset.name = a.name;
-        div.dataset.level = level;
-        div.onmouseenter = function() { this.style.background = '#e3f0fd'; };
-        div.onmouseleave = function() { this.style.background = ''; };
-        div.onclick = function(e) {
-          e.stopPropagation();
-          if (a.hasChild) {
-            // Toggle children visibility
-            var next = this.nextSibling;
-            while (next && next.dataset && parseInt(next.dataset.level) > level) {
-              var tmp = next.nextSibling;
-              next.style.display = next.style.display === 'none' ? '' : 'none';
-              next = tmp;
-            }
-          }
-          selectAgency(a.id, a.name);
-        };
-        container.appendChild(div);
-
-        // Render children
-        renderAgencyTree(agencies, a.id, container, level + 1, filterInput);
-      });
-
-      // Filter
-      filterInput.oninput = function() {
-        var q = this.value.toLowerCase().trim();
-        container.querySelectorAll('.agency-tree-item').forEach(function(item) {
-          var match = item.dataset.name.toLowerCase().indexOf(q) > -1;
-          item.style.display = match ? '' : 'none';
-        });
-        if (q) {
-          container.querySelectorAll('.agency-tree-item').forEach(function(item) {
-            if (item.style.display !== 'none') {
-              var parent = item.previousSibling;
-              while (parent) {
-                if (parent.dataset && parent.style.display === 'none') parent.style.display = '';
-                parent = parent.previousSibling;
-              }
-            }
-          });
-        }
-      };
+    function selectAgency(id, name) {
+      document.getElementById('ReceivingAgency').value = id;
+      document.getElementById('agencyDisplay').textContent = name;
+      document.getElementById('agencyModal').remove();
+      showToast('Đã chọn: ' + name, 'success');
     }
 
     function selectAgency(id, name) {
@@ -653,8 +630,7 @@
           btn.disabled = false;
           btn.textContent = 'Ghi nhận';
           if (result.success) {
-            showToast(result.message || 'Đăng ký thành công!', 'success');
-            setTimeout(function() { window.location.href = '/'; }, 2000);
+            showSuccessModal(data);
           } else {
             showToast(result.error || 'Có lỗi xảy ra!', 'error');
           }
@@ -666,6 +642,64 @@
           showToast('Không thể kết nối đến máy chủ!', 'error');
         });
       return false;
+    }
+
+    // ── Success modal ──
+    function showSuccessModal(data) {
+      var existing = document.getElementById('successModal');
+      if (existing) existing.remove();
+
+      var now = new Date();
+      var dateStr = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + now.getFullYear();
+      var timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+
+      var modal = document.createElement('div');
+      modal.id = 'successModal';
+      modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px';
+
+      var box = document.createElement('div');
+      box.style.cssText = 'background:#fff;border-radius:8px;width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:0';
+
+      var header = document.createElement('div');
+      header.style.cssText = 'background:linear-gradient(135deg,#042c6a,#0372b6);color:#fff;padding:24px 28px 20px;text-align:center;border-radius:8px 8px 0 0';
+      header.innerHTML = '<div style="font-size:48px;margin-bottom:8px"><i class="bi bi-check-circle-fill"></i></div><div style="font-size:20px;font-weight:700">ĐĂNG KÝ THÀNH CÔNG</div><div style="font-size:14px;opacity:0.9;margin-top:4px">Vui lòng kiểm tra ứng dụng ngân hàng để nhận mã đồng bộ</div>';
+      box.appendChild(header);
+
+      var body = document.createElement('div');
+      body.style.cssText = 'padding:20px 28px';
+
+      var info = [
+        { label: 'Họ và tên', value: data.FullName },
+        { label: 'Mã số BHXH', value: data.BhxhCode },
+        { label: 'Số CCCD', value: data.IdNumber },
+        { label: 'Số điện thoại', value: data.Phone },
+        { label: 'Tỉnh/TP', value: document.getElementById('provinceSelect').value },
+        { label: 'Xã/Phường', value: document.getElementById('wardSelect').value },
+        { label: 'Ngày đăng ký', value: dateStr + ' ' + timeStr },
+      ];
+
+      info.forEach(function(item) {
+        if (!item.value) return;
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:14px';
+        row.innerHTML = '<span style="color:#666;width:130px;flex-shrink:0">' + item.label + '</span><span style="color:#222;font-weight:500">' + item.value + '</span>';
+        body.appendChild(row);
+      });
+
+      var note = document.createElement('div');
+      note.style.cssText = 'margin-top:16px;padding:14px 18px;background:#e3f0fd;border-radius:6px;border-left:4px solid #0372b6;font-size:14px;color:#042c6a;line-height:1.6;font-weight:500';
+      note.innerHTML = '<i class="bi bi-phone" style="margin-right:8px;font-size:16px"></i> Mã Đồng Bộ đã được gửi về ứng dụng ngân hàng liên kết. Truy cập vào ứng dụng ngân hàng để kiểm tra.';
+      body.appendChild(note);
+
+      box.appendChild(body);
+
+      var footer = document.createElement('div');
+      footer.style.cssText = 'padding:16px 28px 20px;text-align:center;border-top:1px solid #eee';
+      footer.innerHTML = '<button onclick="document.getElementById(\'successModal\').remove();window.location.href=\'/\'" style="background:#0372b6;color:#fff;border:none;padding:10px 32px;border-radius:4px;font-size:15px;font-weight:600;cursor:pointer">Về trang chủ</button>';
+      box.appendChild(footer);
+
+      modal.appendChild(box);
+      document.body.appendChild(modal);
     }
 
     // ── Cleanup dropdowns on doc click ──

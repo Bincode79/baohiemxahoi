@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tra cứu mã số BHXH - BẢO HIỂM XÃ HỘI VIỆT NAM</title>
+  <link rel="icon" type="image/png" href="/images/logonew.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .tc-wrap { max-width: 720px; margin: 32px auto; padding: 0 16px; }
+    .tc-card { background:#fff; border:1px solid #e3e9f2; border-radius:14px; box-shadow:0 6px 24px rgba(3,114,182,.08); overflow:hidden; }
+    .tc-head { background:linear-gradient(135deg,#042c6a,#0372b6); color:#fff; padding:22px 24px; display:flex; align-items:center; gap:14px; }
+    .tc-head img { width:46px; height:46px; border-radius:8px; background:#fff; padding:4px; }
+    .tc-head h1 { font-size:18px; margin:0; font-weight:700; }
+    .tc-head p { margin:0; font-size:12px; opacity:.85; }
+    .tc-body { padding:24px; }
+    .tc-search { display:flex; gap:10px; margin-bottom:22px; }
+    .tc-search input { flex:1; border:1px solid #cfd8e6; border-radius:8px; padding:11px 14px; font-size:15px; }
+    .tc-search input:focus { outline:none; border-color:#0372b6; box-shadow:0 0 0 3px rgba(3,114,182,.15); }
+    .tc-search button { border:none; background:#0372b6; color:#fff; border-radius:8px; padding:0 20px; font-weight:600; }
+    .tc-search button:hover { background:#025a91; }
+    .tc-status { display:inline-block; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+    .tc-status.approved { background:#e6f7ee; color:#0b7a44; }
+    .tc-status.pending { background:#fff5e0; color:#a8650b; }
+    .tc-status.rejected { background:#fdeaea; color:#be1e2d; }
+    .tc-row { display:flex; justify-content:space-between; gap:16px; padding:11px 0; border-bottom:1px dashed #e3e9f2; }
+    .tc-row:last-child { border-bottom:none; }
+    .tc-row .lbl { color:#7b8aa5; font-size:13px; }
+    .tc-row .val { font-weight:600; font-size:14px; text-align:right; }
+    .tc-empty { text-align:center; padding:30px 10px; color:#7b8aa5; }
+    .tc-empty i { font-size:42px; display:block; margin-bottom:10px; color:#cfd8e6; }
+    .tc-loading { text-align:center; padding:24px; color:#7b8aa5; }
+    .tc-back { display:block; text-align:center; margin-top:18px; color:#0372b6; text-decoration:none; font-weight:600; }
+  </style>
+</head>
+<body>
+  <div class="top-strip"></div>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand">
+        <div class="brand-badge"><img src="/images/logonew.png" alt="BHXH" /></div>
+        <div class="brand-text">BẢO HIỂM XÃ HỘI VIỆT NAM</div>
+      </a>
+    </div>
+  </header>
+
+  <div class="tc-wrap">
+    <div class="tc-card">
+      <div class="tc-head">
+        <img src="/images/logonew.png" alt="BHXH" />
+        <div>
+          <h1>TRA CỨU MÃ SỐ BHXH</h1>
+          <p>Tra cứu trạng thái hồ sơ bảo hiểm xã hội</p>
+        </div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-search">
+          <input type="text" id="tcInput" placeholder="Nhập mã số BHXH (ví dụ: 0123456789)" />
+          <button onclick="doLookup()"><i class="bi bi-search"></i> Tra cứu</button>
+        </div>
+        <div id="tcResult"></div>
+      </div>
+    </div>
+    <a href="/" class="tc-back"><i class="bi bi-arrow-left"></i> Về trang chủ</a>
+  </div>
+
+  <script>
+    function renderUser(u) {
+      var statusClass = (u.status.indexOf("Đã duyệt") >= 0) ? "approved"
+        : (u.status.indexOf("từ chối") >= 0) ? "rejected" : "pending";
+      var rows = [
+        ["Họ và tên", u.fullName || "—"],
+        ["Mã số BHXH", u.bhxhCode || "—"],
+        ["Số CCCD", u.cccd || "—"],
+        ["Loại tài khoản", u.accountType || "—"],
+        ["Giới tính", u.gender || "—"],
+        ["Ngày sinh", u.birthDate || "—"],
+        ["Địa chỉ", [u.street, u.ward, u.province].filter(Boolean).join(", ") || "—"],
+        ["Số điện thoại", u.phone || "—"],
+        ["Email", u.email || "—"],
+        ["Nơi đăng ký", u.registrationLocation || "—"],
+      ];
+      var html = '<div style="margin-bottom:14px"><span class="tc-status ' + statusClass + '">' + u.status + '</span></div>';
+      rows.forEach(function(r) {
+        html += '<div class="tc-row"><div class="lbl">' + r[0] + '</div><div class="val">' + escapeHtml(r[1]) + '</div></div>';
+      });
+      document.getElementById("tcResult").innerHTML = html;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function(c) {
+        return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c];
+      });
+    }
+
+    function doLookup() {
+      var code = document.getElementById("tcInput").value.trim();
+      if (!code) { showMsg("Vui lòng nhập mã số BHXH."); return; }
+      runLookup(code);
+    }
+
+    function showMsg(msg) {
+      document.getElementById("tcResult").innerHTML =
+        '<div class="tc-empty"><i class="bi bi-exclamation-circle"></i>' + msg + '</div>';
+    }
+
+    function runLookup(code) {
+      document.getElementById("tcResult").innerHTML =
+        '<div class="tc-loading"><i class="bi bi-arrow-repeat spin"></i> Đang tra cứu...</div>';
+      fetch("/api/lookup/" + encodeURIComponent(code))
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.found) { renderUser(d.user); }
+          else { showMsg("Không tìm thấy hồ sơ với mã số BHXH <strong>" + escapeHtml(code) + "</strong>."); }
+        })
+        .catch(function() { showMsg("Lỗi kết nối máy chủ!"); });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      var params = new URLSearchParams(window.location.search);
+      var ma = params.get("ma");
+      if (ma) {
+        document.getElementById("tcInput").value = ma;
+        runLookup(ma);
+      }
+    });
+  </script>
+  <style>.spin{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}</style>
+</body>
+</html>

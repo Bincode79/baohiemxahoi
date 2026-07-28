@@ -19,6 +19,7 @@ function showLoginModal() {
   document.getElementById('loginModal').removeAttribute('hidden');
   document.getElementById('loginModal').setAttribute('aria-hidden', 'false');
   document.body.classList.add('lm-open');
+  switchLoginType('individual');
 }
 function hideLoginModal() {
   document.getElementById('loginModal').setAttribute('hidden', '');
@@ -30,9 +31,38 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape' && !m.hasAttribute('hidden')) hideLoginModal();
 });
 
-function switchLoginTab(type, el) {
-  document.querySelectorAll('.lm-tab').forEach(function(t) { t.classList.remove('active'); });
-  el.classList.add('active');
+// ========== LOGIN TYPE SWITCH ==========
+var currentLoginType = 'individual';
+function switchLoginType(type) {
+  currentLoginType = type;
+  document.querySelectorAll('.lm-tab input[name="lm-acctype"]').forEach(function(r) {
+    r.checked = r.value === type;
+  });
+  var captchaSection = document.getElementById('lmCaptchaSection');
+  var adminError = document.getElementById('lmAdminError');
+  var forgotLink = document.getElementById('lmForgotLink');
+  var registerBtn = document.getElementById('lmRegisterBtn');
+  var loginBtn = document.getElementById('lmLoginBtn');
+  var usernameInput = document.getElementById('loginUsername');
+
+  if (adminError) adminError.style.display = 'none';
+  document.getElementById('loginPassword').value = '';
+
+  if (type === 'org') {
+    captchaSection.style.display = 'none';
+    if (forgotLink) forgotLink.style.display = 'none';
+    if (registerBtn) registerBtn.style.display = 'none';
+    loginBtn.textContent = 'ĐĂNG NHẬP QUẢN TRỊ';
+    usernameInput.placeholder = 'Tên đăng nhập';
+    usernameInput.required = true;
+  } else {
+    captchaSection.style.display = '';
+    if (forgotLink) forgotLink.style.display = '';
+    if (registerBtn) registerBtn.style.display = '';
+    loginBtn.textContent = 'ĐĂNG NHẬP';
+    usernameInput.placeholder = 'Mã số BHXH/Số ĐDCN/CCCD';
+    usernameInput.required = false;
+  }
 }
 
 // ========== LOGIN HANDLER ==========
@@ -41,6 +71,37 @@ function handleLogin(e) {
   var u = document.getElementById('loginUsername').value.trim();
   var p = document.getElementById('loginPassword').value.trim();
   if (!u || !p) { showToast('Vui lòng nhập tên đăng nhập và mật khẩu!', 'error'); return; }
+
+  if (currentLoginType === 'org') {
+    var adminError = document.getElementById('lmAdminError');
+    fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, password: p })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        localStorage.setItem('adminToken', data.token);
+        hideLoginModal();
+        showToast('Đăng nhập quản trị thành công!', 'success');
+        window.location.href = '/admin';
+      } else {
+        if (adminError) {
+          adminError.textContent = data.error || 'Sai tên đăng nhập hoặc mật khẩu!';
+          adminError.style.display = 'block';
+        }
+      }
+    })
+    .catch(function() {
+      if (adminError) {
+        adminError.textContent = 'Lỗi kết nối máy chủ!';
+        adminError.style.display = 'block';
+      }
+    });
+    return;
+  }
+
   showToast('Đăng nhập thành công!', 'success');
   hideLoginModal();
 }

@@ -11,7 +11,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
   <style>
     .admin-layout { display:flex; min-height:100vh; background:#f4f6fb; }
     .admin-sb {
@@ -154,15 +154,72 @@
       font-size:11px; color:#7b8aa5; white-space:nowrap;
     }
 
+    @media (max-width:900px) {
+      .admin-topbar { flex-wrap:wrap; gap:8px; padding:10px 14px; }
+      .admin-topbar h1 { font-size:15px; }
+      .admin-content { padding:14px; }
+      .admin-card { padding:14px; }
+      .admin-card h3 { font-size:14px; }
+      .admin-table { font-size:13px; }
+      .admin-table th, .admin-table td { padding:8px 6px; }
+      .admin-stat-card { padding:14px; }
+      .admin-stat-card .info .value { font-size:18px; }
+      .admin-stat-card .icon { width:40px; height:40px; font-size:18px; }
+      .admin-stats { grid-template-columns:repeat(2,1fr); gap:10px; }
+    }
     @media (max-width:768px) {
       .admin-layout { flex-direction:column; }
       .admin-sb { width:100%; flex-direction:row; overflow-x:auto; border-right:none; border-bottom:3px solid #5ed6fc; }
       .admin-sb-brand { display:none; }
       .admin-sb-menu { display:flex; padding:0; }
-      .admin-sb-item { border-left:none; border-bottom:3px solid transparent; white-space:nowrap; }
+      .admin-sb-item { border-left:none; border-bottom:3px solid transparent; white-space:nowrap; padding:10px 12px; font-size:13px; }
       .admin-sb-item.active { border-left:none; border-bottom-color:#5ed6fc; }
-      .admin-content { padding:16px; }
-      .admin-stats { grid-template-columns:repeat(2,1fr); gap:10px; }
+      .admin-content { padding:12px; }
+      .admin-stats { grid-template-columns:repeat(2,1fr); gap:8px; }
+      .admin-search { flex-direction:column; }
+      .admin-filter select { width:100%; }
+      .admin-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .admin-topbar h1 { font-size:14px; }
+      .admin-topbar-right { gap:8px; }
+      .admin-topbar-right .admin-user span { font-size:12px; }
+      .admin-topbar-right .admin-user img { width:28px; height:28px; }
+      #currentDateTime { font-size:11px; }
+    }
+    @media (max-width:560px) {
+      .admin-stats { grid-template-columns:repeat(2,1fr); gap:6px; }
+      .admin-stat-card { padding:12px; gap:10px; flex-direction:column; text-align:center; }
+      .admin-stat-card .icon { width:36px; height:36px; font-size:16px; margin:0 auto; }
+      .admin-stat-card .info .value { font-size:16px; }
+      .admin-stat-card .info .label { font-size:10px; }
+      .admin-card { padding:12px; margin-bottom:12px; }
+      .admin-card h3 { font-size:13px; margin-bottom:10px; padding-bottom:6px; }
+      .admin-topbar { padding:8px 10px; }
+      .admin-topbar h1 { font-size:13px; }
+      .admin-content { padding:10px; }
+      .admin-table { font-size:12px; }
+      .admin-table th, .admin-table td { padding:6px 4px; }
+      .admin-btn { font-size:12px; padding:5px 10px; }
+      .admin-btn-sm { font-size:11px; padding:3px 8px; }
+      .admin-sb-item { padding:8px 10px; font-size:12px; min-height:38px; }
+      .admin-badge { font-size:10px; padding:1px 7px; }
+    }
+    @media (max-width:640px) {
+      [style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
+      [style*="grid-template-columns:1fr 2fr"] { grid-template-columns:1fr !important; }
+      [style*="grid-template-columns:repeat(4"] { grid-template-columns:repeat(2,1fr) !important; }
+    }
+    @media (max-width:480px) {
+      .admin-layout { min-height:100dvh; }
+      .admin-sb { overflow-x:auto; }
+      .admin-sb-item { font-size:11px; padding:8px 8px; gap:6px; min-height:36px; }
+      .admin-sb-item i { width:14px; font-size:13px; }
+      .admin-sb-item .badge { font-size:9px; padding:1px 5px; }
+      .admin-stats { grid-template-columns:1fr 1fr; gap:6px; }
+      .admin-card { border-radius:8px; }
+      .admin-table th, .admin-table td { padding:5px 3px; font-size:11px; white-space:nowrap; }
+      .admin-table th { font-size:10px; }
+      .admin-search input { font-size:13px; padding:8px 10px; }
+      #adminLoginOverlay > div { width:90% !important; padding:24px 20px !important; }
     }
   </style>
 </head>
@@ -180,8 +237,8 @@
       <a class="admin-sb-item" data-section="registrations" href="#"><i class="bi bi-file-earmark-text"></i> Đăng ký <span class="badge" id="regBadge">0</span></a>
       <a class="admin-sb-item" data-section="appointments" href="#"><i class="bi bi-calendar-check"></i> Lịch hẹn <span class="badge" id="apptBadge">0</span></a>
       <a class="admin-sb-item" data-section="chat" href="#"><i class="bi bi-chat-dots"></i> Hỗ trợ <span class="badge" id="chatBadge">0</span></a>
-      <a class="admin-sb-item" data-section="agencies" href="#"><i class="bi bi-building"></i> Đơn vị BHXH</a>
-      <a class="admin-sb-item" data-section="reports" href="#"><i class="bi bi-graph-up"></i> Báo cáo</a>
+      <!-- agencies removed -->
+      <!-- reports removed -->
       <a class="admin-sb-item" data-section="qrcode" href="#"><i class="bi bi-qr-code"></i> Mã QR</a>
       <a class="admin-sb-item" data-section="settings" href="#"><i class="bi bi-gear"></i> Cài đặt</a>
       <a class="admin-sb-item" href="/"><i class="bi bi-arrow-left-circle"></i> Về trang chủ</a>
@@ -282,127 +339,96 @@
       </div>
 
       <!-- ===== REPORTS ===== -->
-      <div class="admin-section" id="section-reports">
-        <div class="admin-card">
-          <h3><i class="bi bi-graph-up"></i> Báo cáo thống kê</h3>
-          <div class="admin-filter">
-            <select><option>6 tháng đầu năm 2026</option><option>Năm 2025</option><option>Năm 2024</option></select>
-            <button class="admin-btn admin-btn-primary" onclick="showToast('Xuất báo cáo', 'info')"><i class="bi bi-download"></i> Xuất báo cáo</button>
-          </div>
-          <div style="overflow-x:auto">
-            <table class="admin-table">
-              <thead>
-                <tr><th>Tháng</th><th>Số lượng ĐK</th><th>Đã duyệt</th><th>Chờ duyệt</th><th>Từ chối</th><th>Cá nhân</th><th>Tổ chức</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Tháng 1</td><td>180</td><td>165</td><td>10</td><td>5</td><td>120</td><td>60</td></tr>
-                <tr><td>Tháng 2</td><td>220</td><td>200</td><td>12</td><td>8</td><td>145</td><td>75</td></tr>
-                <tr><td>Tháng 3</td><td>280</td><td>258</td><td>15</td><td>7</td><td>190</td><td>90</td></tr>
-                <tr><td>Tháng 4</td><td>350</td><td>320</td><td>18</td><td>12</td><td>230</td><td>120</td></tr>
-                <tr><td>Tháng 5</td><td>410</td><td>380</td><td>22</td><td>8</td><td>270</td><td>140</td></tr>
-                <tr><td>Tháng 6</td><td>520</td><td>480</td><td>30</td><td>10</td><td>345</td><td>175</td></tr>
-                <tr style="font-weight:700;background:#f5f7fa"><td>Tổng</td><td>1,960</td><td>1,803</td><td>107</td><td>50</td><td>1,300</td><td>660</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== AGENCIES ===== -->
-      <div class="admin-section" id="section-agencies" style="display:none">
-        <div class="admin-card">
-          <h3><i class="bi bi-building"></i> Danh sách đơn vị Bảo hiểm Xã hội</h3>
-          <div style="margin-bottom:12px;display:flex;gap:8px">
-            <input type="text" id="agencySearchInput" placeholder="Tìm kiếm đơn vị..." style="flex:1;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none" oninput="filterAgencyTree()">
-          </div>
-          <div id="agencyTreeContainer" style="max-height:500px;overflow-y:auto;border:1px solid #e6ebf3;border-radius:6px;padding:8px"></div>
-        </div>
-      </div>
-
       <!-- ===== QR CODE ===== -->
       <div class="admin-section" id="section-qrcode">
         <div class="admin-card">
-          <h3><i class="bi bi-qr-code"></i> Tạo mã QR thanh toán ngân hàng</h3>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+          <h3><i class="bi bi-qr-code"></i> Mã QR thanh toán BHXH</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start">
             <div>
-              <div style="margin-bottom:12px">
+              <div style="margin-bottom:14px">
                 <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Ngân hàng thụ hưởng <span style="color:#be1e2d">*</span></label>
                 <select id="qrBank" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;background:#fff;outline:none">
-                  <option value="VCB|Vietcombank">Vietcombank</option>
-                  <option value="BIDV|BIDV">BIDV</option>
-                  <option value="VTIB|VietinBank">VietinBank</option>
-                  <option value="AGR|Agribank">Agribank</option>
-                  <option value="MB|MB Bank">MB Bank</option>
-                  <option value="TCB|Techcombank">Techcombank</option>
-                  <option value="ACB|ACB">ACB</option>
-                  <option value="VPB|VPBank">VPBank</option>
-                  <option value="TPB|TPBank">TPBank</option>
-                  <option value="HDB|HDBank">HDBank</option>
-                  <option value="VIB|VIB">VIB</option>
-                  <option value="SHB|SHB">SHB</option>
-                  <option value="LPB|LPBank">LPBank</option>
-                  <option value="OCB|OCB">OCB</option>
-                  <option value="SCB|SCB">SCB</option>
-                  <option value="SEA|SeABank">SeABank</option>
-                  <option value="PVC|PVcomBank">PVcomBank</option>
-                  <option value="NAB|Nam A Bank">Nam A Bank</option>
-                  <option value="VCC|Bảo Việt Bank">Bảo Việt Bank</option>
-                  <option value="ABB|ABBANK">ABBANK</option>
-                  <option value="BAC|BAC A BANK">BAC A BANK</option>
-                  <option value="BVB|BaoVietBank">BaoVietBank</option>
-                  <option value="CBB|CBBank">CBBank</option>
-                  <option value="DAB|DongABank">DongABank</option>
-                  <option value="EIB|Eximbank">Eximbank</option>
-                  <option value="GPB|GPBank">GPBank</option>
-                  <option value="HKB|Hong Leong Bank">Hong Leong Bank</option>
-                  <option value="IVB|Indovina Bank">Indovina Bank</option>
-                  <option value="KLB|KienLongBank">KienLongBank</option>
-                  <option value="LVP|LienVietPostBank">LienVietPostBank</option>
-                  <option value="MSB|MSB">MSB</option>
-                  <option value="NCB|NCB">NCB</option>
-                  <option value="NVB|NaviBank">NaviBank</option>
-                  <option value="PBVN|Public Bank">Public Bank</option>
-                  <option value="PGB|PG Bank">PG Bank</option>
-                  <option value="SGB|SaigonBank">SaigonBank</option>
-                  <option value="STB|Sacombank">Sacombank</option>
-                  <option value="UOB|United Overseas Bank">United Overseas Bank</option>
-                  <option value="VAB|VietABank">VietABank</option>
-                  <option value="VBB|VietBank">VietBank</option>
-                  <option value="VCA|VietCapitalBank">VietCapitalBank</option>
-                  <option value="VRB|Vietnam-Russia Bank">Vietnam-Russia Bank</option>
-                  <option value="WOO|Woori Bank">Woori Bank</option>
+                  <option value="VCB|Vietcombank">Ngân hàng TMCP Ngoại thương Việt Nam - Vietcombank</option>
+                  <option value="BIDV|BIDV">Ngân hàng TMCP Đầu tư và Phát triển Việt Nam - BIDV</option>
+                  <option value="VTIB|VietinBank">Ngân hàng TMCP Công thương Việt Nam - VietinBank</option>
+                  <option value="AGR|Agribank">Ngân hàng Nông nghiệp và Phát triển Nông thôn - Agribank</option>
+                  <option value="MB|MB Bank">Ngân hàng TMCP Quân đội - MB Bank</option>
+                  <option value="TCB|Techcombank">Ngân hàng TMCP Kỹ thương Việt Nam - Techcombank</option>
+                  <option value="ACB|ACB">Ngân hàng TMCP Á Châu - ACB</option>
+                  <option value="VPB|VPBank">Ngân hàng TMCP Việt Nam Thịnh Vượng - VPBank</option>
+                  <option value="TPB|TPBank">Ngân hàng TMCP Tiên Phong - TPBank</option>
+                  <option value="HDB|HDBank">Ngân hàng TMCP Phát triển TP HCM - HDBank</option>
+                  <option value="VIB|VIB">Ngân hàng TMCP Quốc tế Việt Nam - VIB</option>
+                  <option value="SHB|SHB">Ngân hàng TMCP Sài Gòn - Hà Nội - SHB</option>
+                  <option value="LPB|LPBank">Ngân hàng TMCP Bưu điện Liên Việt - LPBank</option>
+                  <option value="OCB|OCB">Ngân hàng TMCP Phương Đông - OCB</option>
+                  <option value="SCB|SCB">Ngân hàng TMCP Sài Gòn - SCB</option>
+                  <option value="SEA|SeABank">Ngân hàng TMCP Đông Nam Á - SeABank</option>
+                  <option value="PVC|PVcomBank">Ngân hàng TMCP Đại Chúng Việt Nam - PVcomBank</option>
+                  <option value="NAB|Nam A Bank">Ngân hàng TMCP Nam Á - Nam A Bank</option>
+                  <option value="VCC|Bảo Việt Bank">Ngân hàng TMCP Bảo Việt - Bảo Việt Bank</option>
+                  <option value="ABB|ABBANK">Ngân hàng TMCP An Bình - ABBANK</option>
+                  <option value="BAC|BAC A BANK">Ngân hàng TMCP Bắc Á - Bac A Bank</option>
+                  <option value="BVB|BaoVietBank">Ngân hàng TMCP Bảo Việt - BaoVietBank</option>
+                  <option value="CBB|CBBank">Ngân hàng TNHH MTV Xây dựng - CBBank</option>
+                  <option value="DAB|DongABank">Ngân hàng TMCP Đông Á - Dong A Bank</option>
+                  <option value="EIB|Eximbank">Ngân hàng TMCP Xuất nhập khẩu Việt Nam - Eximbank</option>
+                  <option value="GPB|GPBank">Ngân hàng TMCP Dầu khí Toàn cầu - GPBank</option>
+                  <option value="HKB|Hong Leong Bank">Ngân hàng TNHH MTV Hong Leong Việt Nam</option>
+                  <option value="IVB|Indovina Bank">Ngân hàng Liên doanh Indovina - IVB</option>
+                  <option value="KLB|KienLongBank">Ngân hàng TMCP Kiên Long - KienLongBank</option>
+                  <option value="LVP|LienVietPostBank">Ngân hàng TMCP Bưu điện Liên Việt - LienVietPostBank</option>
+                  <option value="MSB|MSB">Ngân hàng TMCP Hàng Hải Việt Nam - MSB</option>
+                  <option value="NCB|NCB">Ngân hàng TMCP Quốc Dân - NCB</option>
+                  <option value="NVB|NaviBank">Ngân hàng TMCP Quốc tế Việt Nam - NaviBank</option>
+                  <option value="PBVN|Public Bank">Ngân hàng TNHH MTV Public Bank Việt Nam</option>
+                  <option value="PGB|PG Bank">Ngân hàng TMCP Xăng dầu Petrolimex - PG Bank</option>
+                  <option value="SGB|SaigonBank">Ngân hàng TMCP Sài Gòn Công Thương - Saigonbank</option>
+                  <option value="STB|Sacombank">Ngân hàng TMCP Sài Gòn Thương Tín - Sacombank</option>
+                  <option value="UOB|United Overseas Bank">Ngân hàng TNHH MTV UOB Việt Nam</option>
+                  <option value="VAB|VietABank">Ngân hàng TMCP Việt Á - VietABank</option>
+                  <option value="VBB|VietBank">Ngân hàng TMCP Việt Nam Thương Tín - VietBank</option>
+                  <option value="VCA|VietCapitalBank">Ngân hàng TMCP Bản Việt - VietCapitalBank</option>
+                  <option value="VRB|Vietnam-Russia Bank">Ngân hàng Liên doanh Việt - Nga - VRB</option>
+                  <option value="WOO|Woori Bank">Ngân hàng TNHH MTV Woori Việt Nam</option>
                 </select>
               </div>
-              <div style="margin-bottom:12px">
-                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Số tài khoản <span style="color:#be1e2d">*</span></label>
-                <input type="text" id="qrAccount" value="1012345678" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Số tài khoản <span style="color:#be1e2d">*</span></label>
+                  <input type="text" id="qrAccount" value="1012345678" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Chủ tài khoản <span style="color:#be1e2d">*</span></label>
+                  <input type="text" id="qrHolder" value="NGUYỄN VĂN AN" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+                </div>
               </div>
-              <div style="margin-bottom:12px">
-                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Chủ tài khoản <span style="color:#be1e2d">*</span></label>
-                <input type="text" id="qrHolder" value="NGUYỄN VĂN AN" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Số tiền (VNĐ) <span style="color:#be1e2d">*</span></label>
+                  <input type="text" id="qrAmount" value="500,000" oninput="formatQrAmount(this)" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Kích thước QR</label>
+                  <select id="qrSize" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;background:#fff">
+                    <option value="180">Nhỏ (180x180)</option>
+                    <option value="240" selected>Vừa (240x240)</option>
+                    <option value="300">Lớn (300x300)</option>
+                  </select>
+                </div>
               </div>
-              <div style="margin-bottom:12px">
-                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Số tiền (VNĐ) <span style="color:#be1e2d">*</span></label>
-                <input type="text" id="qrAmount" value="500,000" oninput="formatQrAmount(this)" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
-              </div>
-              <div style="margin-bottom:12px">
+              <div style="margin-bottom:14px">
                 <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Nội dung chuyển khoản <span style="color:#be1e2d">*</span></label>
-                <input type="text" id="qrContent" value="Nộp BHXH tháng 7/2026 - 0123456789" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
+                <input type="text" id="qrContent" value="DB3739397" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
               </div>
-              <div style="margin-bottom:12px">
-                <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Kích thước QR</label>
-                <select id="qrSize" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;background:#fff">
-                  <option value="180">Nhỏ (180x180)</option>
-                  <option value="240" selected>Vừa (240x240)</option>
-                  <option value="300">Lớn (300x300)</option>
-                </select>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <button class="admin-btn admin-btn-primary" onclick="generateQR()"><i class="bi bi-qr-code"></i> Tạo mã QR</button>
+                <button class="admin-btn admin-btn-success" onclick="downloadQR()" id="qrDownloadBtn" style="display:none"><i class="bi bi-download"></i> Tải xuống</button>
               </div>
-              <button class="admin-btn admin-btn-primary" onclick="generateQR()"><i class="bi bi-qr-code"></i> Tạo mã QR</button>
-              <button class="admin-btn admin-btn-success" onclick="downloadQR()" id="qrDownloadBtn" style="display:none;margin-left:8px"><i class="bi bi-download"></i> Tải xuống</button>
               <div id="qrError" style="color:#be1e2d;font-size:12px;margin-top:8px;display:none"></div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
-              <div id="qrPreview" style="border:2px dashed #d6dde8;border-radius:8px;padding:16px;text-align:center;min-height:260px;display:flex;align-items:center;justify-content:center;width:100%">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+              <div id="qrPreview" style="border:2px dashed #d6dde8;border-radius:12px;padding:20px;text-align:center;min-height:280px;display:flex;align-items:center;justify-content:center;width:100%;background:#fafbfe">
                 <div style="color:#96a1b4;font-size:13px"><i class="bi bi-qr-code" style="font-size:48px;display:block;margin-bottom:8px;opacity:0.4"></i>Nhập thông tin và nhấn "Tạo mã QR"</div>
               </div>
               <div id="qrPaymentInfo" style="font-size:12px;color:#555;width:100%;display:none"></div>
@@ -461,9 +487,14 @@
               <div id="chatConversationList"></div>
             </div>
             <div style="border:1px solid #d6dde8;border-radius:8px;display:flex;flex-direction:column;max-height:500px">
-              <div style="padding:10px;background:#f5f7fa;font-weight:700;font-size:13px;border-bottom:1px solid #d6dde8;color:#042c6a" id="chatDetailHeader">Chọn hội thoại để xem</div>
+              <div style="padding:10px;background:#f5f7fa;font-weight:700;font-size:13px;border-bottom:1px solid #d6dde8;color:#042c6a;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <span id="chatDetailHeader">Chọn hội thoại để xem</span>
+                <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="adminDeleteAllChats()" title="Xoá tất cả hội thoại"><i class="bi bi-trash3"></i> Xoá tất cả</button>
+              </div>
               <div id="chatMessagesAdmin" style="flex:1;overflow-y:auto;padding:10px;background:#fafbfc;display:flex;flex-direction:column;gap:8px"></div>
-              <div style="padding:10px;border-top:1px solid #d6dde8;display:flex;gap:8px">
+              <div style="padding:10px;border-top:1px solid #d6dde8;display:flex;gap:8px;align-items:center">
+                <button class="admin-btn admin-btn-ghost" id="adminChatAttachBtn" title="Gửi ảnh, video, tệp" style="padding:8px 10px"><i class="bi bi-paperclip"></i></button>
+                <input type="file" id="adminChatFile" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" style="display:none">
                 <input type="text" id="adminChatInput" placeholder="Nhập tin nhắn..." style="flex:1;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
                 <button class="admin-btn admin-btn-primary" onclick="adminSendReply()"><i class="bi bi-send-fill"></i> Gửi</button>
               </div>
@@ -507,6 +538,7 @@ document.querySelectorAll('.admin-sb-item[data-section]').forEach(function(item)
     document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
     document.getElementById('section-' + section).classList.add('active');
     document.getElementById('pageTitle').textContent = item.textContent.trim();
+    if (section === 'qrcode') setTimeout(generateQR, 50);
   });
 });
 
@@ -692,20 +724,63 @@ function updateApptStatus(id, status) {
 }
 
 // ===== CHAT =====
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
 var currentConvId = null;
+var chatMsgCounts = {};
+var chatPollTimer = null;
+
 function loadChatConversations() {
-  fetch('/api/chat/conversations')
+  fetch('/api/chat/conversations', { headers: { 'Authorization': 'Bearer ' + (adminToken || '') } })
     .then(function(r) { return r.json(); })
     .then(function(convs) {
       var active = convs.filter(function(c) { return c.status === 'active'; });
       document.getElementById('chatBadge').textContent = active.length;
 
+      // Check for new messages in current conversation
+      if (currentConvId) {
+        var curr = convs.find(function(c) { return c.id === currentConvId; });
+        if (curr && chatMsgCounts[currentConvId] !== undefined) {
+          var prevCount = chatMsgCounts[currentConvId];
+          if (curr.messages.length > prevCount) {
+            // New message arrived while viewing — refresh display
+            showChatConversation(currentConvId, convs);
+          }
+        }
+      }
+
+      // Update msg counts
+      convs.forEach(function(c) { chatMsgCounts[c.id] = c.messages.length; });
+
+      // Update active conversation unread badge
+      var totalUnread = 0;
+      convs.forEach(function(c) { totalUnread += c.unread || 0; });
+      var badge = document.getElementById('chatBadge');
+      if (totalUnread > 0) {
+        badge.textContent = totalUnread;
+        badge.style.background = '#c62828';
+      } else {
+        badge.textContent = active.length;
+        badge.style.background = '';
+      }
+
+      // Show notification if new conversations appeared
+      var existingIds = Object.keys(chatMsgCounts).map(Number);
+      var newConvs = convs.filter(function(c) { return existingIds.indexOf(c.id) === -1 && c.status === 'active'; });
+      if (newConvs.length > 0 && document.hidden === false) {
+        showToast('Có ' + newConvs.length + ' hội thoại mới!', 'info');
+      }
+
       var list = document.getElementById('chatConversationList');
       list.innerHTML = convs.map(function(c) {
-        var lastMsg = c.messages.length > 0 ? c.messages[c.messages.length - 1].text : '';
-        return '<div class="chat-conv-item" data-id="' + c.id + '" style="padding:10px 12px;border-bottom:1px solid #f0f3f8;cursor:pointer;font-size:13px">' +
-          '<div style="font-weight:700;color:#042c6a">' + c.userName + (c.unread > 0 ? ' <span style="color:#c62828">(' + c.unread + ')</span>' : '') + '</div>' +
-          '<div style="color:#7b8aa5;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + lastMsg.substring(0, 50) + '</div>' +
+        var lm = c.messages.length > 0 ? c.messages[c.messages.length - 1] : null;
+        var lastMsg = lm ? (lm.type && lm.type !== 'text' ? '[' + lm.type + '] ' + (lm.fileName || '') : lm.text) : '';
+        return '<div class="chat-conv-item' + (c.id === currentConvId ? ' active' : '') + '" data-id="' + c.id + '" style="padding:12px 14px;border-bottom:1px solid #eef2f7;cursor:pointer;font-size:13px;transition:background .15s;display:flex;flex-direction:column;gap:3px' + (c.unread > 0 ? ';background:#fff8e1' : '') + '">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-weight:700;color:#042c6a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + c.userName + '</span>' + (c.unread > 0 ? ' <span style="background:#c62828;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 7px;flex-shrink:0">'+ c.unread +'</span>' : '') + '</div>' +
+           '<div style="color:#7b8aa5;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(lastMsg).substring(0, 50) + '</div>' +
           '</div>';
       }).join('');
 
@@ -717,7 +792,52 @@ function loadChatConversations() {
       });
     });
 }
+
+function startChatPolling() {
+  stopChatPolling();
+  loadChatConversations();
+  chatPollTimer = setInterval(loadChatConversations, 5000);
+}
+
+function stopChatPolling() {
+  if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
+}
+
 loadChatConversations();
+startChatPolling();
+
+function renderChatMsg(container, m) {
+  var isAdmin = m.from === 'admin';
+  var div = document.createElement('div');
+  div.style.cssText = 'max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;' +
+    (isAdmin ? 'background:#042c6a;color:#fff;align-self:flex-end;border-bottom-right-radius:4px' : 'background:#e3f0fd;color:#042c6a;align-self:flex-start;border-bottom-left-radius:4px');
+  if (m.type === 'image') {
+    var img = document.createElement('img');
+    img.src = m.fileUrl; img.alt = m.fileName || 'image';
+    img.style.cssText = 'display:block;max-width:200px;max-height:200px;border-radius:8px;margin-bottom:2px';
+    div.appendChild(img);
+  } else if (m.type === 'video') {
+    var video = document.createElement('video');
+    video.src = m.fileUrl; video.controls = true;
+    video.style.cssText = 'display:block;max-width:220px;border-radius:8px;margin-bottom:2px';
+    div.appendChild(video);
+  } else if (m.type === 'file') {
+    var a = document.createElement('a');
+    a.href = m.fileUrl; a.target = '_blank'; a.download = m.fileName || '';
+    a.textContent = '📎 ' + (m.fileName || 'Tệp đính kèm');
+    a.style.color = 'inherit';
+    div.appendChild(a);
+  } else if (m.text) {
+    var span = document.createElement('span');
+    span.textContent = m.text;
+    div.appendChild(span);
+  }
+  var t = document.createElement('span');
+  t.style.cssText = 'font-size:10px;opacity:0.6;display:block;margin-top:4px';
+  t.textContent = m.time || '';
+  div.appendChild(t);
+  container.appendChild(div);
+}
 
 function showChatConversation(id, convs) {
   currentConvId = id;
@@ -727,13 +847,10 @@ function showChatConversation(id, convs) {
   document.getElementById('chatDetailHeader').textContent = 'Hội thoại với: ' + conv.userName + ' (CCCD: ' + (conv.idCard || 'N/A') + ', ĐT: ' + (conv.phone || 'N/A') + ')';
 
   var container = document.getElementById('chatMessagesAdmin');
-  container.innerHTML = conv.messages.map(function(m) {
-    var isAdmin = m.from === 'admin';
-    return '<div style="max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;' +
-      (isAdmin ? 'background:#042c6a;color:#fff;align-self:flex-start;border-bottom-left-radius:4px' : 'background:#e3f0fd;color:#042c6a;align-self:flex-end;border-bottom-right-radius:4px') +
-      '">' + m.text + '<span style="font-size:10px;opacity:0.6;display:block;margin-top:4px">' + m.time + '</span></div>';
-  }).join('');
+  container.innerHTML = '';
+  (conv.messages || []).forEach(function(m) { renderChatMsg(container, m); });
   container.scrollTop = container.scrollHeight;
+  loadChatConversations();
 }
 
 function adminSendReply() {
@@ -745,19 +862,20 @@ function adminSendReply() {
 
   fetch('/api/chat/admin/reply', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (adminToken || '') },
     body: JSON.stringify({ conversationId: currentConvId, text: text })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
     if (data.success) {
       showToast('Tin nhắn đã được gửi!', 'success');
+      var container = document.getElementById('chatMessagesAdmin');
+      container.innerHTML = '';
+      (data.messages || []).forEach(function(m) { renderChatMsg(container, m); });
+      container.scrollTop = container.scrollHeight;
       loadChatConversations();
-      setTimeout(function() {
-        var convs = document.querySelectorAll('.chat-conv-item');
-        var el = Array.from(convs).find(function(e) { return parseInt(e.dataset.id) === currentConvId; });
-        if (el) el.click();
-      }, 200);
+    } else {
+      showToast(data.error || 'Gửi thất bại!', 'error');
     }
   });
 }
@@ -765,6 +883,59 @@ function adminSendReply() {
 document.getElementById('adminChatInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') adminSendReply();
 });
+
+document.getElementById('adminChatAttachBtn').addEventListener('click', function() {
+  document.getElementById('adminChatFile').click();
+});
+document.getElementById('adminChatFile').addEventListener('change', function(e) {
+  var f = e.target.files && e.target.files[0];
+  if (f) adminSendFile(f);
+  e.target.value = '';
+});
+
+function adminSendFile(file) {
+  if (!currentConvId) { showToast('Vui lòng chọn hội thoại!', 'error'); return; }
+  var fd = new FormData();
+  fd.append('file', file);
+  fd.append('conversationId', currentConvId);
+  fd.append('sender', 'admin');
+  fetch('/api/chat/upload', { method: 'POST', body: fd })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        showToast('Tệp đã được gửi!', 'success');
+        var container = document.getElementById('chatMessagesAdmin');
+        container.innerHTML = '';
+        (data.conversation.messages || []).forEach(function(m) { renderChatMsg(container, m); });
+        container.scrollTop = container.scrollHeight;
+        loadChatConversations();
+      } else {
+        showToast(data.error || 'Gửi tệp thất bại!', 'error');
+      }
+    })
+    .catch(function() { showToast('Lỗi gửi tệp!', 'error'); });
+}
+
+function adminDeleteAllChats() {
+  if (!confirm('Bạn có chắc chắn muốn xoá TẤT CẢ hội thoại chat? Hành động này không thể hoàn tác.')) return;
+  fetch('/api/chat/conversations', {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + (adminToken || '') }
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        showToast('Đã xoá tất cả hội thoại!', 'success');
+        currentConvId = null;
+        document.getElementById('chatDetailHeader').textContent = 'Chọn hội thoại để xem';
+        document.getElementById('chatMessagesAdmin').innerHTML = '';
+        loadChatConversations();
+      } else {
+        showToast(data.error || 'Xoá thất bại!', 'error');
+      }
+    })
+    .catch(function() { showToast('Lỗi xoá hội thoại!', 'error'); });
+}
 
 // ===== ADMIN AUTH =====
 var adminToken = localStorage.getItem('adminToken');
@@ -936,17 +1107,32 @@ function generateQR() {
     return;
   }
 
-  // VietQR format (NAPAS standard)
-  // 000201010212... QR code for bank transfer
-  var qrData = [
-    '000201010212',
-    '38' + bankBin.length.toString().padStart(2, '0') + bankBin,
-    '30' + account.length.toString().padStart(2, '0') + account,
-    '5802VN',
-    '62' + ('08' + content.length.toString().padStart(2, '0') + content).length.toString().padStart(2, '0') + '08' + content.length.toString().padStart(2, '0') + content,
-    '6304',
-  ].join('');
+  // Gọi API server để sinh mã VietQR chuẩn Napas (dùng thư viện qrcode đã test)
+  var params = new URLSearchParams({
+    type: 'vietqr',
+    bin: bankBin,
+    account: account,
+    holder: holder,
+    amount: amountRaw,
+    content: content
+  });
+  fetch('/api/qr?' + params.toString())
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (!data.success) {
+        errorEl.textContent = data.error || 'Lỗi tạo mã QR!';
+        errorEl.style.display = 'block';
+        return;
+      }
+      renderVietQR(data.url, data.payload, bankName, account, holder, amountRaw, content);
+    })
+    .catch(function () {
+      errorEl.textContent = 'Lỗi kết nối máy chủ khi tạo mã QR!';
+      errorEl.style.display = 'block';
+    });
+}
 
+function renderVietQR(imgUrl, payload, bankName, account, holder, amountRaw, content) {
   var preview = document.getElementById('qrPreview');
   preview.innerHTML = '';
   preview.style.border = 'none';
@@ -980,61 +1166,49 @@ function generateQR() {
   qrWrap.style.cssText =
     'background:#fff;border-radius:8px;padding:12px;' +
     'box-shadow:0 2px 12px rgba(0,0,0,0.15);z-index:1';
-  var canvas = document.createElement('canvas');
-  canvas.id = 'qrCanvas';
-  canvas.style.display = 'block';
-  qrWrap.appendChild(canvas);
+  var img = document.createElement('img');
+  img.id = 'qrCanvas';
+  img.src = imgUrl;
+  img.alt = 'Mã QR thanh toán';
+  img.style.cssText = 'display:block;width:240px;height:240px;image-rendering:pixelated';
+  qrWrap.appendChild(img);
   qrCard.appendChild(qrWrap);
 
   // Info text below QR
   var infoText = document.createElement('div');
   infoText.style.cssText = 'text-align:center;z-index:1';
   infoText.innerHTML =
-    '<div style="color:rgba(255,255,255,0.5);font-size:9px;letter-spacing:1px;text-transform:uppercase">QUÉT MÃ QR ĐỂ CHUYỂN KHOẢN</div>';
+    '<div style="color:rgba(255,255,255,0.5);font-size:9px;letter-spacing:1px;text-transform:uppercase">QUÉT MÃ QR ĐỂ THANH TOÁN</div>';
   qrCard.appendChild(infoText);
 
   preview.appendChild(qrCard);
 
-  try {
-    qrCodeInstance = new QRCode(canvas, {
-      text: qrData,
-      width: size,
-      height: size,
-      colorDark: '#042c6a',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.H,
-    });
+  document.getElementById('qrDownloadBtn').style.display = 'inline-flex';
+  document.getElementById('qrDownloadBtn').onclick = function () { downloadQR(imgUrl); };
 
-    document.getElementById('qrDownloadBtn').style.display = 'inline-flex';
+  var infoEl = document.getElementById('qrPaymentInfo');
+  infoEl.style.display = 'block';
+  infoEl.innerHTML =
+    '<div style="background:linear-gradient(135deg,#f5f7fa,#fff);border-radius:8px;padding:14px;border:1px solid #eaeef6">' +
+    '<div style="font-weight:700;color:#042c6a;margin-bottom:8px;font-size:13px"><i class="bi bi-info-circle me-1"></i>Thông tin chuyển khoản</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12px">' +
+    '<span style="color:#7b8aa5">Ngân hàng:</span><span style="font-weight:600;color:#042c6a">' + bankName + '</span>' +
+    '<span style="color:#7b8aa5">Số tài khoản:</span><span style="font-weight:600;color:#042c6a">' + account + '</span>' +
+    '<span style="color:#7b8aa5">Chủ tài khoản:</span><span style="font-weight:600;color:#042c6a">' + holder.toUpperCase() + '</span>' +
+    '<span style="color:#7b8aa5">Số tiền:</span><span style="font-weight:700;color:#be1e2d">' + parseInt(amountRaw).toLocaleString('vi-VN') + ' VNĐ</span>' +
+    '<span style="color:#7b8aa5;grid-column:1/-1">Nội dung:</span><span style="font-weight:600;grid-column:1/-1;color:#042c6a">' + content + '</span>' +
+    '</div></div>';
 
-    var infoEl = document.getElementById('qrPaymentInfo');
-    infoEl.style.display = 'block';
-    infoEl.innerHTML =
-      '<div style="background:linear-gradient(135deg,#f5f7fa,#fff);border-radius:8px;padding:14px;border:1px solid #eaeef6">' +
-      '<div style="font-weight:700;color:#042c6a;margin-bottom:8px;font-size:13px"><i class="bi bi-info-circle me-1"></i>Thông tin chuyển khoản</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12px">' +
-      '<span style="color:#7b8aa5">Ngân hàng:</span><span style="font-weight:600;color:#042c6a">' + bankName + '</span>' +
-      '<span style="color:#7b8aa5">Số tài khoản:</span><span style="font-weight:600;color:#042c6a">' + account + '</span>' +
-      '<span style="color:#7b8aa5">Chủ tài khoản:</span><span style="font-weight:600;color:#042c6a">' + holder.toUpperCase() + '</span>' +
-      '<span style="color:#7b8aa5">Số tiền:</span><span style="font-weight:700;color:#be1e2d">' + parseInt(amountRaw).toLocaleString('vi-VN') + ' VNĐ</span>' +
-      '<span style="color:#7b8aa5;grid-column:1/-1">Nội dung:</span><span style="font-weight:600;grid-column:1/-1;color:#042c6a">' + content + '</span>' +
-      '</div></div>';
+  showToast('Đã tạo mã QR chuyển khoản thành công!', 'success');
+}
 
-    showToast('Đã tạo mã QR chuyển khoản thành công!', 'success');
-  } catch (e) {
-    errorEl.textContent = 'Lỗi tạo mã QR: ' + e.message;
-    errorEl.style.display = 'block';
+  function downloadQR(url) {
+    if (!url) return;
+    var link = document.createElement('a');
+    link.download = 'QR_BANK_' + document.getElementById('qrAccount').value.trim() + '.png';
+    link.href = url;
+    link.click();
   }
-}
-
-function downloadQR() {
-  var canvas = document.getElementById('qrCanvas');
-  if (!canvas) return;
-  var link = document.createElement('a');
-  link.download = 'QR_BANK_' + document.getElementById('qrAccount').value.trim() + '.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-}
 
 checkAdminAuth();
 </script>

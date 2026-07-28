@@ -6,9 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
+    "dev": "PUBLIC_BASE_URL=http://156.67.214.184:3002 ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "network": "curl -s http://localhost:3001/api/Provinces | head -c 100"
+    "network": "curl -s http://localhost:3002/api/Provinces | head -c 100"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,13 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "@types/multer": "^2.2.0",
+    "@types/pg": "^8.20.0",
+    "@types/qrcode": "^1.5.6",
+    "express": "^5.2.1",
+    "jsqr": "^1.4.0",
+    "multer": "^2.2.0",
+    "pg": "^8.22.0",
+    "qrcode": "^1.5.4"
   }
 }
