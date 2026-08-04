@@ -1,8 +1,13 @@
+import "dotenv/config";
 import { Pool } from "pg";
 
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is not set. Please configure it in .env or environment.");
+}
+
 const pool = new Pool({
-  connectionString:
-    "postgresql://neondb_owner:REDACTED@ep-jolly-shape-ao9zjo2o-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+  connectionString: databaseUrl,
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,

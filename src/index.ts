@@ -709,8 +709,8 @@ app.post("/api/register", async (req, res) => {
 });
 
 // ===== ADMIN AUTH =====
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "REDACTED";
+const ADMIN_USER = process.env.ADMIN_USER || "admin";
+const ADMIN_PASS = process.env.ADMIN_PASS || "";
 
 app.post("/api/admin/login", async (req, res) => {
   const { username, password } = req.body;
