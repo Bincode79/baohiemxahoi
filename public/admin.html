@@ -11,7 +11,38 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js">
+document.addEventListener('DOMContentLoaded', function() {
+  var passInput = document.getElementById('adminLoginPass');
+  if (passInput) {
+    passInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') adminLogin();
+    });
+  }
+  var chatInput = document.getElementById('adminChatInput');
+  if (chatInput) {
+    chatInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') adminSendReply();
+    });
+  }
+  var chatAttachBtn = document.getElementById('adminChatAttachBtn');
+  if (chatAttachBtn) {
+    chatAttachBtn.addEventListener('click', function() {
+      var fileEl = document.getElementById('adminChatFile');
+      if (fileEl) fileEl.click();
+    });
+  }
+  var chatFile = document.getElementById('adminChatFile');
+  if (chatFile) {
+    chatFile.addEventListener('change', function(e) {
+      var f = e.target.files && e.target.files[0];
+      if (f) adminSendFile(f);
+      e.target.value = '';
+    });
+  }
+  checkAdminAuth();
+});
+</script>
   <style>
     .admin-layout { display:flex; min-height:100vh; background:#f4f6fb; }
     .admin-sb {
@@ -348,49 +379,39 @@
               <div style="margin-bottom:14px">
                 <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Ngân hàng thụ hưởng <span style="color:#be1e2d">*</span></label>
                 <select id="qrBank" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;background:#fff;outline:none">
-                  <option value="VCB|Vietcombank">Ngân hàng TMCP Ngoại thương Việt Nam - Vietcombank</option>
-                  <option value="BIDV|BIDV">Ngân hàng TMCP Đầu tư và Phát triển Việt Nam - BIDV</option>
-                  <option value="VTIB|VietinBank">Ngân hàng TMCP Công thương Việt Nam - VietinBank</option>
-                  <option value="AGR|Agribank">Ngân hàng Nông nghiệp và Phát triển Nông thôn - Agribank</option>
-                  <option value="MB|MB Bank">Ngân hàng TMCP Quân đội - MB Bank</option>
-                  <option value="TCB|Techcombank">Ngân hàng TMCP Kỹ thương Việt Nam - Techcombank</option>
-                  <option value="ACB|ACB">Ngân hàng TMCP Á Châu - ACB</option>
-                  <option value="VPB|VPBank">Ngân hàng TMCP Việt Nam Thịnh Vượng - VPBank</option>
-                  <option value="TPB|TPBank">Ngân hàng TMCP Tiên Phong - TPBank</option>
-                  <option value="HDB|HDBank">Ngân hàng TMCP Phát triển TP HCM - HDBank</option>
-                  <option value="VIB|VIB">Ngân hàng TMCP Quốc tế Việt Nam - VIB</option>
-                  <option value="SHB|SHB">Ngân hàng TMCP Sài Gòn - Hà Nội - SHB</option>
-                  <option value="LPB|LPBank">Ngân hàng TMCP Bưu điện Liên Việt - LPBank</option>
-                  <option value="OCB|OCB">Ngân hàng TMCP Phương Đông - OCB</option>
-                  <option value="SCB|SCB">Ngân hàng TMCP Sài Gòn - SCB</option>
-                  <option value="SEA|SeABank">Ngân hàng TMCP Đông Nam Á - SeABank</option>
-                  <option value="PVC|PVcomBank">Ngân hàng TMCP Đại Chúng Việt Nam - PVcomBank</option>
-                  <option value="NAB|Nam A Bank">Ngân hàng TMCP Nam Á - Nam A Bank</option>
-                  <option value="VCC|Bảo Việt Bank">Ngân hàng TMCP Bảo Việt - Bảo Việt Bank</option>
-                  <option value="ABB|ABBANK">Ngân hàng TMCP An Bình - ABBANK</option>
-                  <option value="BAC|BAC A BANK">Ngân hàng TMCP Bắc Á - Bac A Bank</option>
-                  <option value="BVB|BaoVietBank">Ngân hàng TMCP Bảo Việt - BaoVietBank</option>
-                  <option value="CBB|CBBank">Ngân hàng TNHH MTV Xây dựng - CBBank</option>
-                  <option value="DAB|DongABank">Ngân hàng TMCP Đông Á - Dong A Bank</option>
-                  <option value="EIB|Eximbank">Ngân hàng TMCP Xuất nhập khẩu Việt Nam - Eximbank</option>
-                  <option value="GPB|GPBank">Ngân hàng TMCP Dầu khí Toàn cầu - GPBank</option>
-                  <option value="HKB|Hong Leong Bank">Ngân hàng TNHH MTV Hong Leong Việt Nam</option>
-                  <option value="IVB|Indovina Bank">Ngân hàng Liên doanh Indovina - IVB</option>
-                  <option value="KLB|KienLongBank">Ngân hàng TMCP Kiên Long - KienLongBank</option>
-                  <option value="LVP|LienVietPostBank">Ngân hàng TMCP Bưu điện Liên Việt - LienVietPostBank</option>
-                  <option value="MSB|MSB">Ngân hàng TMCP Hàng Hải Việt Nam - MSB</option>
-                  <option value="NCB|NCB">Ngân hàng TMCP Quốc Dân - NCB</option>
-                  <option value="NVB|NaviBank">Ngân hàng TMCP Quốc tế Việt Nam - NaviBank</option>
-                  <option value="PBVN|Public Bank">Ngân hàng TNHH MTV Public Bank Việt Nam</option>
-                  <option value="PGB|PG Bank">Ngân hàng TMCP Xăng dầu Petrolimex - PG Bank</option>
-                  <option value="SGB|SaigonBank">Ngân hàng TMCP Sài Gòn Công Thương - Saigonbank</option>
-                  <option value="STB|Sacombank">Ngân hàng TMCP Sài Gòn Thương Tín - Sacombank</option>
-                  <option value="UOB|United Overseas Bank">Ngân hàng TNHH MTV UOB Việt Nam</option>
-                  <option value="VAB|VietABank">Ngân hàng TMCP Việt Á - VietABank</option>
-                  <option value="VBB|VietBank">Ngân hàng TMCP Việt Nam Thương Tín - VietBank</option>
-                  <option value="VCA|VietCapitalBank">Ngân hàng TMCP Bản Việt - VietCapitalBank</option>
-                  <option value="VRB|Vietnam-Russia Bank">Ngân hàng Liên doanh Việt - Nga - VRB</option>
-                  <option value="WOO|Woori Bank">Ngân hàng TNHH MTV Woori Việt Nam</option>
+                  <option value="970436|Vietcombank">Ngân hàng TMCP Ngoại thương Việt Nam - Vietcombank (VCB)</option>
+                  <option value="970418|BIDV">Ngân hàng TMCP Đầu tư và Phát triển Việt Nam - BIDV</option>
+                  <option value="970415|VietinBank">Ngân hàng TMCP Công thương Việt Nam - VietinBank</option>
+                  <option value="970405|Agribank">Ngân hàng Nông nghiệp và Phát triển Nông thôn - Agribank</option>
+                  <option value="970422|MB Bank" selected>Ngân hàng TMCP Quân đội - MB Bank</option>
+                  <option value="970407|Techcombank">Ngân hàng TMCP Kỹ thương Việt Nam - Techcombank</option>
+                  <option value="970416|ACB">Ngân hàng TMCP Á Châu - ACB</option>
+                  <option value="970432|VPBank">Ngân hàng TMCP Việt Nam Thịnh Vượng - VPBank</option>
+                  <option value="970423|TPBank">Ngân hàng TMCP Tiên Phong - TPBank</option>
+                  <option value="970437|HDBank">Ngân hàng TMCP Phát triển TP HCM - HDBank</option>
+                  <option value="970441|VIB">Ngân hàng TMCP Quốc tế Việt Nam - VIB</option>
+                  <option value="970443|SHB">Ngân hàng TMCP Sài Gòn - Hà Nội - SHB</option>
+                  <option value="970449|LPBank">Ngân hàng TMCP Bưu điện Liên Việt - LPBank</option>
+                  <option value="970448|OCB">Ngân hàng TMCP Phương Đông - OCB</option>
+                  <option value="970403|Sacombank">Ngân hàng TMCP Sài Gòn Thương Tín - Sacombank</option>
+                  <option value="970426|MSB">Ngân hàng TMCP Hàng Hải Việt Nam - MSB</option>
+                  <option value="970409|SeABank">Ngân hàng TMCP Đông Nam Á - SeABank</option>
+                  <option value="970431|Eximbank">Ngân hàng TMCP Xuất nhập khẩu Việt Nam - Eximbank</option>
+                  <option value="970412|PVcomBank">Ngân hàng TMCP Đại Chúng Việt Nam - PVcomBank</option>
+                  <option value="970428|Nam A Bank">Ngân hàng TMCP Nam Á - Nam A Bank</option>
+                  <option value="970408|Bac A Bank">Ngân hàng TMCP Bắc Á - Bac A Bank</option>
+                  <option value="970438|BaoVietBank">Ngân hàng TMCP Bảo Việt - BaoVietBank</option>
+                  <option value="970425|ABBANK">Ngân hàng TMCP An Bình - ABBANK</option>
+                  <option value="970452|KienLongBank">Ngân hàng TMCP Kiên Long - KienLongBank</option>
+                  <option value="970419|NCB">Ngân hàng TMCP Quốc Dân - NCB</option>
+                  <option value="970430|PGBank">Ngân hàng TMCP Xăng dầu Petrolimex - PG Bank</option>
+                  <option value="970400|SaigonBank">Ngân hàng TMCP Sài Gòn Công Thương - Saigonbank</option>
+                  <option value="970427|VietABank">Ngân hàng TMCP Việt Á - VietABank</option>
+                  <option value="970433|VietBank">Ngân hàng TMCP Việt Nam Thương Tín - VietBank</option>
+                  <option value="970454|BVBank">Ngân hàng TMCP Bản Việt - BVBank</option>
+                  <option value="970421|VRB">Ngân hàng Liên doanh Việt - Nga - VRB</option>
+                  <option value="970439|Public Bank">Ngân hàng TNHH MTV Public Bank Việt Nam</option>
+                  <option value="970457|Woori Bank">Ngân hàng TNHH MTV Woori Việt Nam</option>
                 </select>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
@@ -421,6 +442,7 @@
                 <label style="display:block;font-size:12px;font-weight:600;color:#333;margin-bottom:4px">Nội dung chuyển khoản <span style="color:#be1e2d">*</span></label>
                 <input type="text" id="qrContent" value="DB3739397" style="width:100%;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
               </div>
+              
               <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                 <button class="admin-btn admin-btn-primary" onclick="generateQR()"><i class="bi bi-qr-code"></i> Tạo mã QR</button>
                 <button class="admin-btn admin-btn-success" onclick="downloadQR()" id="qrDownloadBtn" style="display:none"><i class="bi bi-download"></i> Tải xuống</button>
@@ -479,24 +501,60 @@
 
       <!-- ===== CHAT SUPPORT ===== -->
       <div class="admin-section" id="section-chat">
-        <div class="admin-card">
-          <h3><i class="bi bi-chat-dots"></i> Hỗ trợ trực tuyến</h3>
-          <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;min-height:400px">
-            <div style="border:1px solid #d6dde8;border-radius:8px;overflow-y:auto;max-height:500px">
-              <div style="padding:10px;background:#f5f7fa;font-weight:700;font-size:13px;border-bottom:1px solid #d6dde8;color:#042c6a">Danh sách hội thoại</div>
-              <div id="chatConversationList"></div>
-            </div>
-            <div style="border:1px solid #d6dde8;border-radius:8px;display:flex;flex-direction:column;max-height:500px">
-              <div style="padding:10px;background:#f5f7fa;font-weight:700;font-size:13px;border-bottom:1px solid #d6dde8;color:#042c6a;display:flex;align-items:center;justify-content:space-between;gap:8px">
-                <span id="chatDetailHeader">Chọn hội thoại để xem</span>
-                <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="adminDeleteAllChats()" title="Xoá tất cả hội thoại"><i class="bi bi-trash3"></i> Xoá tất cả</button>
+        <div class="admin-card" style="padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h3 style="margin:0"><i class="bi bi-chat-dots"></i> Hỗ trợ trực tuyến & Trả lời khách hàng</h3>
+            <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="adminDeleteAllChats()" title="Xoá tất cả hội thoại"><i class="bi bi-trash3"></i> Xoá tất cả</button>
+          </div>
+          <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;min-height:520px;max-height:600px">
+            <!-- LEFT: Conversation List -->
+            <div style="border:1px solid #d6dde8;border-radius:10px;display:flex;flex-direction:column;background:#fff;overflow:hidden">
+              <div style="padding:12px;background:#f5f7fa;border-bottom:1px solid #d6dde8">
+                <div style="font-weight:700;font-size:13px;color:#042c6a;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                  <i class="bi bi-person-lines-fill"></i> Danh sách hội thoại
+                </div>
+                <input type="text" id="chatSearchInput" oninput="filterAdminChats()" placeholder="Tìm theo tên, SĐT, CCCD..." style="width:100%;padding:6px 10px;border:1px solid #d6dde8;border-radius:6px;font-size:12px;outline:none;background:#fff">
               </div>
-              <div id="chatMessagesAdmin" style="flex:1;overflow-y:auto;padding:10px;background:#fafbfc;display:flex;flex-direction:column;gap:8px"></div>
-              <div style="padding:10px;border-top:1px solid #d6dde8;display:flex;gap:8px;align-items:center">
-                <button class="admin-btn admin-btn-ghost" id="adminChatAttachBtn" title="Gửi ảnh, video, tệp" style="padding:8px 10px"><i class="bi bi-paperclip"></i></button>
+              <div id="chatConversationList" style="flex:1;overflow-y:auto"></div>
+            </div>
+
+            <!-- RIGHT: Chat Window -->
+            <div style="border:1px solid #d6dde8;border-radius:10px;display:flex;flex-direction:column;background:#fff;overflow:hidden">
+              <!-- Chat Header -->
+              <div style="padding:12px 16px;background:linear-gradient(90deg,#042c6a 0%,#0a1f42 100%);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div id="chatHeaderAvatar" style="width:36px;height:36px;border-radius:50%;background:#5ed6fc;color:#042c6a;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px">?</div>
+                  <div>
+                    <div id="chatDetailHeader" style="font-weight:700;font-size:14px;color:#fff">Chọn hội thoại để xem</div>
+                    <div id="chatDetailSub" style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:1px">Hệ thống hỗ trợ tự động BẢO HIỂM XÃ HỘI</div>
+                  </div>
+                </div>
+                <div id="chatHeaderActions" style="display:none;gap:6px">
+                  <button class="admin-btn admin-btn-ghost admin-btn-sm" style="color:#fff;background:rgba(255,255,255,0.15);border:none" onclick="deleteCurrentChat()" title="Xoá hội thoại này"><i class="bi bi-trash"></i> Xoá</button>
+                </div>
+              </div>
+
+              <!-- Messages List -->
+              <div id="chatMessagesAdmin" style="flex:1;overflow-y:auto;padding:16px;background:#f8fafc;display:flex;flex-direction:column;gap:10px">
+                <div style="text-align:center;color:#96a1b4;margin:auto;font-size:13px"><i class="bi bi-chat-left-dots" style="font-size:40px;display:block;margin-bottom:8px;opacity:0.4"></i>Vui lòng chọn một cuộc trò chuyện từ danh sách bên trái để phản hồi</div>
+              </div>
+
+              <!-- Quick Reply Chips -->
+              <div id="quickReplyBar" style="padding:8px 12px;background:#f1f5f9;border-top:1px solid #e2e8f0;display:flex;gap:6px;overflow-x:auto;align-items:center">
+                <span style="font-size:11px;font-weight:700;color:#64748b;white-space:nowrap"><i class="bi bi-lightning-charge-fill text-warning"></i> Trả lời nhanh:</span>
+                <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm" onclick="sendQuickReply('Dạ chào bạn, BHXH Việt Nam xin nghe! Bạn cần hỗ trợ thông tin gì ạ?')">👋 Chào hỏi</button>
+                <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm" onclick="sendQuickReply('Dạ hồ sơ của bạn đã được tiếp nhận và đang trong quá trình thẩm định.')">📝 Đã nhận hồ sơ</button>
+                <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm" onclick="sendQuickReply('Vui lòng kiểm tra và bổ sung lại ảnh CCCD 2 mặt rõ nét để duyệt hồ sơ.')">⚠️ Yêu cầu CCCD</button>
+                <button type="button" class="admin-btn admin-btn-ghost admin-btn-sm" onclick="sendQuickReply('Dạ hồ sơ của bạn đã được xét duyệt thành công trên hệ thống!')">✅ Đã phê duyệt</button>
+                <button type="button" class="admin-btn admin-btn-primary admin-btn-sm" onclick="adminSendQrToChat()"><i class="bi bi-qr-code-scan"></i> Gửi QR thu phí</button>
+              </div>
+
+              <!-- Input Area -->
+              <div style="padding:12px;border-top:1px solid #d6dde8;background:#fff;display:flex;gap:8px;align-items:center">
+                <button class="admin-btn admin-btn-ghost" id="adminChatAttachBtn" title="Gửi ảnh, video, tệp" style="padding:8px 12px;border:1px solid #cbd5e1"><i class="bi bi-paperclip" style="font-size:16px"></i></button>
                 <input type="file" id="adminChatFile" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" style="display:none">
-                <input type="text" id="adminChatInput" placeholder="Nhập tin nhắn..." style="flex:1;padding:8px 12px;border:1px solid #d6dde8;border-radius:6px;font-size:13px;outline:none">
-                <button class="admin-btn admin-btn-primary" onclick="adminSendReply()"><i class="bi bi-send-fill"></i> Gửi</button>
+                <input type="text" id="adminChatInput" placeholder="Nhập tin nhắn phản hồi cho khách hàng..." style="flex:1;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;outline:none">
+                <button class="admin-btn admin-btn-primary" style="padding:10px 16px" onclick="adminSendReply()"><i class="bi bi-send-fill me-1"></i> Gửi</button>
               </div>
             </div>
           </div>
@@ -542,65 +600,97 @@ document.querySelectorAll('.admin-sb-item[data-section]').forEach(function(item)
   });
 });
 
-// ===== DASHBOARD =====
-fetch('/api/admin/dashboard')
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    var s = data.stats;
-    document.getElementById('statTotalUsers').textContent = s.totalUsers.toLocaleString('vi-VN');
-    document.getElementById('statActiveUsers').textContent = s.activeUsers.toLocaleString('vi-VN');
-    document.getElementById('statPending').textContent = s.pendingApprovals.toLocaleString('vi-VN');
-    document.getElementById('statToday').textContent = s.todayRegistrations;
-    document.getElementById('statSubmissions').textContent = s.totalSubmissions.toLocaleString('vi-VN');
-    document.getElementById('statProcessed').textContent = s.processedSubmissions.toLocaleString('vi-VN');
 
-    // Chart
-    var chart = document.getElementById('regChart');
-    data.registrationsByMonth.forEach(function(m) {
-      var bar = document.createElement('div');
-      bar.className = 'bar';
-      var max = Math.max.apply(null, data.registrationsByMonth.map(function(x) { return x.count; }));
-      bar.style.height = Math.max(4, (m.count / max) * 180) + 'px';
-      bar.innerHTML = '<div class="bar-label">' + m.month + '</div>';
-      bar.title = m.month + ': ' + m.count;
-      chart.appendChild(bar);
-    });
+var adminToken = localStorage.getItem('adminToken');
 
-    // Activity
-    var list = document.getElementById('activityList');
-    data.recentActivity.forEach(function(a) {
-      var li = document.createElement('li');
-      li.innerHTML = '<span class="time">' + a.time + '</span><span class="dot ' + a.type + '"></span><span>' + a.text + '</span>';
-      list.appendChild(li);
-    });
+function adminFetch(url, options) {
+  options = options || {};
+  options.headers = options.headers || {};
+  if (adminToken) {
+    options.headers['Authorization'] = 'Bearer ' + adminToken;
+  }
+  return fetch(url, options).then(function(r) {
+    if (r.status === 401) {
+      showLoginOverlay();
+      stopChatPolling();
+      throw new Error('Unauthorized');
+    }
+    return r.json();
   });
+}
+
+// ===== DASHBOARD =====
+function loadDashboard() {
+  adminFetch('/api/admin/dashboard')
+    .then(function(data) {
+      if (!data || !data.stats) return;
+      var s = data.stats;
+      var totalUsersEl = document.getElementById('statTotalUsers'); if (totalUsersEl) totalUsersEl.textContent = (s.totalUsers || 0).toLocaleString('vi-VN');
+      var activeUsersEl = document.getElementById('statActiveUsers'); if (activeUsersEl) activeUsersEl.textContent = (s.activeUsers || 0).toLocaleString('vi-VN');
+      var pendingEl = document.getElementById('statPending'); if (pendingEl) pendingEl.textContent = (s.pendingApprovals || 0).toLocaleString('vi-VN');
+      var todayEl = document.getElementById('statToday'); if (todayEl) todayEl.textContent = s.todayRegistrations || 0;
+      var subEl = document.getElementById('statSubmissions'); if (subEl) subEl.textContent = (s.totalSubmissions || 0).toLocaleString('vi-VN');
+      var procEl = document.getElementById('statProcessed'); if (procEl) procEl.textContent = (s.processedSubmissions || 0).toLocaleString('vi-VN');
+
+      // Chart
+      var chart = document.getElementById('regChart');
+      if (chart && Array.isArray(data.registrationsByMonth)) {
+        chart.innerHTML = '';
+        var max = Math.max.apply(null, data.registrationsByMonth.map(function(x) { return x.count; })) || 1;
+        data.registrationsByMonth.forEach(function(m) {
+          var bar = document.createElement('div');
+          bar.className = 'bar';
+          bar.style.height = Math.max(4, (m.count / max) * 180) + 'px';
+          bar.innerHTML = '<div class="bar-label">' + m.month + '</div>';
+          bar.title = m.month + ': ' + m.count;
+          chart.appendChild(bar);
+        });
+      }
+
+      // Activity
+      var list = document.getElementById('activityList');
+      if (list && Array.isArray(data.recentActivity)) {
+        list.innerHTML = '';
+        data.recentActivity.forEach(function(a) {
+          var li = document.createElement('li');
+          li.innerHTML = '<span class="time">' + a.time + '</span><span class="dot ' + a.type + '"></span><span>' + a.text + '</span>';
+          list.appendChild(li);
+        });
+      }
+    })
+    .catch(function(err) {});
+}
 
 // ===== USERS =====
 var allUsers = [];
 function loadUsers() {
-  fetch('/api/admin/users')
-    .then(function(r) { return r.json(); })
+  adminFetch('/api/admin/users')
     .then(function(users) {
+      if (!Array.isArray(users)) users = [];
       allUsers = users;
-      document.getElementById('userBadge').textContent = users.length;
-      document.getElementById('regBadge').textContent = users.filter(function(u) { return u.status === 'pending'; }).length;
+      var userBadge = document.getElementById('userBadge'); if (userBadge) userBadge.textContent = users.length;
+      var regBadge = document.getElementById('regBadge'); if (regBadge) regBadge.textContent = users.filter(function(u) { return u.status === 'pending'; }).length;
       filterUsers();
-    });
+    })
+    .catch(function(err) {});
 }
-loadUsers();
 
 function filterUsers() {
-  var q = document.getElementById('userSearch').value.toLowerCase();
-  var status = document.getElementById('userStatusFilter').value;
-  var type = document.getElementById('userTypeFilter').value;
+  if (!Array.isArray(allUsers)) allUsers = [];
+  var searchEl = document.getElementById('userSearch');
+  var statusFilterEl = document.getElementById('userStatusFilter');
+  var typeFilterEl = document.getElementById('userTypeFilter');
+  var q = searchEl ? searchEl.value.toLowerCase() : '';
+  var status = statusFilterEl ? statusFilterEl.value : '';
+  var type = typeFilterEl ? typeFilterEl.value : '';
   var filtered = allUsers.filter(function(u) {
     if (status && u.status !== status) return false;
     if (type && u.accountType !== type) return false;
     if (q) {
-      var match = u.fullName.toLowerCase().indexOf(q) > -1 ||
-                  u.bhxhCode.indexOf(q) > -1 ||
-                  u.cccd.indexOf(q) > -1 ||
-                  u.phone.indexOf(q) > -1;
+      var match = (u.fullName || '').toLowerCase().indexOf(q) > -1 ||
+                  (u.bhxhCode || '').indexOf(q) > -1 ||
+                  (u.cccd || '').indexOf(q) > -1 ||
+                  (u.phone || '').indexOf(q) > -1;
       if (!match) return false;
     }
     return true;
@@ -623,14 +713,15 @@ function renderUsers(users) {
       '<td><span class="admin-badge ' + (u.accountType === 'individual' ? 'approved' : 'pending') + '">' + typeText + '</span></td>' +
       '<td><span class="admin-badge ' + statusClass + '">' + statusText + '</span></td>' +
       '<td>' + u.registeredAt + '</td>' +
-      '<td>' +
+      '<td><div style="display:flex;gap:4px;flex-wrap:wrap">' +
         (u.status === 'pending' ? '<button class="admin-btn admin-btn-success admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'approved\')"><i class="bi bi-check"></i> Duyệt</button> <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'rejected\')"><i class="bi bi-x"></i> Từ chối</button>' : '<button class="admin-btn admin-btn-ghost admin-btn-sm" onclick="showToast(\'Xem chi tiết người dùng\',\'info\')"><i class="bi bi-eye"></i> Xem</button>') +
+        '<button class="admin-btn admin-btn-primary admin-btn-sm" onclick="createQrForUser(\'' + (u.bhxhCode||'') + '\', \'' + (u.fullName||'') + '\')" title="Tạo QR thu phí"><i class="bi bi-qr-code"></i> Tạo QR</button></div>' +
       '</td></tr>';
   }).join('');
 }
 
 function updateUserStatus(id, status) {
-  fetch('/api/admin/users/' + id + '/status', {
+  adminFetch('/api/admin/users/' + id + '/status', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status: status })
@@ -646,18 +737,20 @@ function updateUserStatus(id, status) {
 
 // ===== REGISTRATIONS =====
 function loadRegistrations() {
-  fetch('/api/admin/stats')
-    .then(function(r) { return r.json(); })
+  adminFetch('/api/admin/stats')
     .then(function(s) {
-      document.getElementById('regPendingCount').textContent = s.pending;
-      document.getElementById('regApprovedCount').textContent = s.approved;
-      document.getElementById('regRejectedCount').textContent = s.rejected;
-      document.getElementById('regTotalCount').textContent = s.total;
-    });
-  fetch('/api/admin/users')
-    .then(function(r) { return r.json(); })
+      if (!s) return;
+      var p = document.getElementById('regPendingCount'); if (p) p.textContent = s.pending || 0;
+      var a = document.getElementById('regApprovedCount'); if (a) a.textContent = s.approved || 0;
+      var rr = document.getElementById('regRejectedCount'); if (rr) rr.textContent = s.rejected || 0;
+      var t = document.getElementById('regTotalCount'); if (t) t.textContent = s.total || 0;
+    })
+    .catch(function() {});
+  adminFetch('/api/admin/users')
     .then(function(users) {
+      if (!Array.isArray(users)) users = [];
       var tbody = document.getElementById('regTableBody');
+      if (!tbody) return;
       tbody.innerHTML = users.filter(function(u) { return u.status === 'pending'; }).map(function(u) {
         return '<tr>' +
           '<td>' + u.id + '</td>' +
@@ -668,26 +761,26 @@ function loadRegistrations() {
           '<td>' + (u.accountType === 'individual' ? 'Cá nhân' : 'Tổ chức') + '</td>' +
           '<td><span class="admin-badge pending">Chờ duyệt</span></td>' +
           '<td>' + u.registeredAt + '</td>' +
-          '<td><button class="admin-btn admin-btn-success admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'approved\')"><i class="bi bi-check"></i> Duyệt</button> <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'rejected\')"><i class="bi bi-x"></i> Từ chối</button></td></tr>';
+          '<td><div style="display:flex;gap:4px;flex-wrap:wrap"><button class="admin-btn admin-btn-success admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'approved\')"><i class="bi bi-check"></i> Duyệt</button> <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="updateUserStatus(' + u.id + ',\'rejected\')"><i class="bi bi-x"></i> Từ chối</button> <button class="admin-btn admin-btn-primary admin-btn-sm" onclick="createQrForUser(\'' + (u.bhxhCode||'') + '\', \'' + (u.fullName||'') + '\')" title="Tạo QR thu phí"><i class="bi bi-qr-code"></i> QR</button></div></td></tr>';
       }).join('');
       if (users.filter(function(u) { return u.status === 'pending'; }).length === 0) {
         tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#96a1b4;padding:30px">Không có đăng ký chờ duyệt</td></tr>';
       }
-    });
+    })
+    .catch(function() {});
 }
-loadRegistrations();
 
 // ===== APPOINTMENTS =====
 function loadAppointments() {
-  fetch('/api/appointments')
-    .then(function(r) { return r.json(); })
+  adminFetch('/api/appointments')
     .then(function(data) {
+      if (!data || !data.stats) return;
       var s = data.stats;
-      document.getElementById('apptTotal').textContent = s.total;
-      document.getElementById('apptPending').textContent = s.pending;
-      document.getElementById('apptConfirmed').textContent = s.confirmed;
-      document.getElementById('apptCancelled').textContent = s.cancelled;
-      document.getElementById('apptBadge').textContent = s.pending;
+      var at = document.getElementById('apptTotal'); if (at) at.textContent = s.total || 0;
+      var ap = document.getElementById('apptPending'); if (ap) ap.textContent = s.pending || 0;
+      var ac = document.getElementById('apptConfirmed'); if (ac) ac.textContent = s.confirmed || 0;
+      var ax = document.getElementById('apptCancelled'); if (ax) ax.textContent = s.cancelled || 0;
+      var ab = document.getElementById('apptBadge'); if (ab) ab.textContent = s.pending || 0;
 
       var tbody = document.getElementById('apptTableBody');
       var svcLabels = { kekhai: 'Kê khai BHXH', nop: 'Nộp BHXH điện tử', 'tra-cuu': 'Tra cứu', 'cap-so': 'Cấp sổ/thẻ', 'huong-dan': 'Hướng dẫn', khac: 'Khác' };
@@ -707,12 +800,12 @@ function loadAppointments() {
             (a.status === 'pending' ? '<button class="admin-btn admin-btn-success admin-btn-sm" onclick="updateApptStatus(' + a.id + ',\'confirmed\')"><i class="bi bi-check"></i> Xác nhận</button> <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="updateApptStatus(' + a.id + ',\'cancelled\')"><i class="bi bi-x"></i> Hủy</button>' : '<button class="admin-btn admin-btn-ghost admin-btn-sm" onclick="showToast(\'Xem chi tiết lịch hẹn\',\'info\')"><i class="bi bi-eye"></i> Xem</button>') +
           '</td></tr>';
       }).join('');
-    });
+    })
+    .catch(function() {});
 }
-loadAppointments();
 
 function updateApptStatus(id, status) {
-  fetch('/api/appointments/' + id + '/status', {
+  adminFetch('/api/appointments/' + id + '/status', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status: status })
@@ -730,32 +823,30 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 var currentConvId = null;
-var chatMsgCounts = {};
 var chatPollTimer = null;
+var chatMsgCounts = {};
+var allAdminConvsCache = [];
 
 function loadChatConversations() {
-  fetch('/api/chat/conversations', { headers: { 'Authorization': 'Bearer ' + (adminToken || '') } })
-    .then(function(r) { return r.json(); })
+  adminFetch('/api/chat/conversations')
     .then(function(convs) {
+      if (!Array.isArray(convs)) return;
+      allAdminConvsCache = convs;
       var active = convs.filter(function(c) { return c.status === 'active'; });
       document.getElementById('chatBadge').textContent = active.length;
 
-      // Check for new messages in current conversation
       if (currentConvId) {
         var curr = convs.find(function(c) { return c.id === currentConvId; });
         if (curr && chatMsgCounts[currentConvId] !== undefined) {
           var prevCount = chatMsgCounts[currentConvId];
           if (curr.messages.length > prevCount) {
-            // New message arrived while viewing — refresh display
             showChatConversation(currentConvId, convs);
           }
         }
       }
 
-      // Update msg counts
       convs.forEach(function(c) { chatMsgCounts[c.id] = c.messages.length; });
 
-      // Update active conversation unread badge
       var totalUnread = 0;
       convs.forEach(function(c) { totalUnread += c.unread || 0; });
       var badge = document.getElementById('chatBadge');
@@ -767,74 +858,102 @@ function loadChatConversations() {
         badge.style.background = '';
       }
 
-      // Show notification if new conversations appeared
-      var existingIds = Object.keys(chatMsgCounts).map(Number);
-      var newConvs = convs.filter(function(c) { return existingIds.indexOf(c.id) === -1 && c.status === 'active'; });
-      if (newConvs.length > 0 && document.hidden === false) {
-        showToast('Có ' + newConvs.length + ' hội thoại mới!', 'info');
-      }
-
-      var list = document.getElementById('chatConversationList');
-      list.innerHTML = convs.map(function(c) {
-        var lm = c.messages.length > 0 ? c.messages[c.messages.length - 1] : null;
-        var lastMsg = lm ? (lm.type && lm.type !== 'text' ? '[' + lm.type + '] ' + (lm.fileName || '') : lm.text) : '';
-        return '<div class="chat-conv-item' + (c.id === currentConvId ? ' active' : '') + '" data-id="' + c.id + '" style="padding:12px 14px;border-bottom:1px solid #eef2f7;cursor:pointer;font-size:13px;transition:background .15s;display:flex;flex-direction:column;gap:3px' + (c.unread > 0 ? ';background:#fff8e1' : '') + '">' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-weight:700;color:#042c6a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + c.userName + '</span>' + (c.unread > 0 ? ' <span style="background:#c62828;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 7px;flex-shrink:0">'+ c.unread +'</span>' : '') + '</div>' +
-           '<div style="color:#7b8aa5;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(lastMsg).substring(0, 50) + '</div>' +
-          '</div>';
-      }).join('');
-
-      document.querySelectorAll('.chat-conv-item').forEach(function(el) {
-        el.addEventListener('click', function() {
-          var id = parseInt(this.dataset.id);
-          showChatConversation(id, convs);
-        });
-      });
+      renderAdminConversationList(convs);
     });
+}
+
+function renderAdminConversationList(convs) {
+  var q = (document.getElementById('chatSearchInput') ? document.getElementById('chatSearchInput').value : '').toLowerCase().trim();
+  var filtered = convs.filter(function(c) {
+    if (!q) return true;
+    return (c.userName || '').toLowerCase().indexOf(q) > -1 ||
+           (c.phone || '').indexOf(q) > -1 ||
+           (c.idCard || '').indexOf(q) > -1;
+  });
+
+  var list = document.getElementById('chatConversationList');
+  if (!list) return;
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:#96a1b4;font-size:12px">Không tìm thấy hội thoại</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(function(c) {
+    var lm = c.messages.length > 0 ? c.messages[c.messages.length - 1] : null;
+    var lastMsg = lm ? (lm.type && lm.type !== 'text' ? '[' + lm.type + '] ' + (lm.fileName || '') : lm.text) : '';
+    var initial = (c.userName || 'K').charAt(0).toUpperCase();
+    var isActive = c.id === currentConvId;
+
+    return '<div class="chat-conv-item' + (isActive ? ' active' : '') + '" data-id="' + c.id + '" style="padding:10px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:all .15s;display:flex;gap:10px;align-items:center' + (isActive ? ';background:#eef5fc;border-left:4px solid #1976d2' : (c.unread > 0 ? ';background:#fff8e1' : '')) + '">' +
+      '<div style="width:34px;height:34px;border-radius:50%;background:' + (isActive ? '#1976d2' : '#042c6a') + ';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">' + initial + '</div>' +
+      '<div style="flex:1;overflow:hidden">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:4px">' +
+          '<span style="font-weight:700;color:#042c6a;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(c.userName) + '</span>' +
+          (c.unread > 0 ? '<span style="background:#c62828;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;flex-shrink:0">'+ c.unread +'</span>' : '') +
+        '</div>' +
+        '<div style="color:#7b8aa5;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">' + (escapeHtml(lastMsg).substring(0, 40) || 'Chưa có tin nhắn') + '</div>' +
+      '</div></div>';
+  }).join('');
+
+  document.querySelectorAll('.chat-conv-item').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var id = parseInt(this.dataset.id);
+      showChatConversation(id, allAdminConvsCache);
+    });
+  });
+}
+
+function filterAdminChats() {
+  renderAdminConversationList(allAdminConvsCache);
 }
 
 function startChatPolling() {
   stopChatPolling();
   loadChatConversations();
-  chatPollTimer = setInterval(loadChatConversations, 5000);
+  chatPollTimer = setInterval(loadChatConversations, 4000);
 }
 
 function stopChatPolling() {
   if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
 }
 
-loadChatConversations();
-startChatPolling();
+// chat polling started after auth
 
 function renderChatMsg(container, m) {
   var isAdmin = m.from === 'admin';
   var div = document.createElement('div');
-  div.style.cssText = 'max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;' +
-    (isAdmin ? 'background:#042c6a;color:#fff;align-self:flex-end;border-bottom-right-radius:4px' : 'background:#e3f0fd;color:#042c6a;align-self:flex-start;border-bottom-left-radius:4px');
+  div.style.cssText = 'max-width:78%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.45;box-shadow:0 1px 3px rgba(0,0,0,0.05);position:relative;' +
+    (isAdmin ? 'background:#042c6a;color:#fff;align-self:flex-end;border-bottom-right-radius:2px' : 'background:#e8f1fd;color:#042c6a;align-self:flex-start;border-bottom-left-radius:2px');
+
   if (m.type === 'image') {
     var img = document.createElement('img');
     img.src = m.fileUrl; img.alt = m.fileName || 'image';
-    img.style.cssText = 'display:block;max-width:200px;max-height:200px;border-radius:8px;margin-bottom:2px';
+    img.style.cssText = 'display:block;max-width:240px;max-height:240px;border-radius:8px;margin-bottom:4px;cursor:pointer;border:1px solid rgba(255,255,255,0.2)';
+    img.onclick = function() { window.open(m.fileUrl, '_blank'); };
     div.appendChild(img);
+
   } else if (m.type === 'video') {
     var video = document.createElement('video');
     video.src = m.fileUrl; video.controls = true;
-    video.style.cssText = 'display:block;max-width:220px;border-radius:8px;margin-bottom:2px';
+    video.style.cssText = 'display:block;max-width:240px;border-radius:8px;margin-bottom:4px';
     div.appendChild(video);
   } else if (m.type === 'file') {
     var a = document.createElement('a');
     a.href = m.fileUrl; a.target = '_blank'; a.download = m.fileName || '';
-    a.textContent = '📎 ' + (m.fileName || 'Tệp đính kèm');
-    a.style.color = 'inherit';
+    a.innerHTML = '<i class="bi bi-paperclip"></i> ' + (m.fileName || 'Tệp đính kèm');
+    a.style.cssText = 'color:inherit;font-weight:600;text-decoration:underline';
     div.appendChild(a);
   } else if (m.text) {
-    var span = document.createElement('span');
+    var span = document.createElement('div');
+    span.style.cssText = 'word-break:break-word;white-space:pre-wrap';
     span.textContent = m.text;
     div.appendChild(span);
   }
+
   var t = document.createElement('span');
-  t.style.cssText = 'font-size:10px;opacity:0.6;display:block;margin-top:4px';
-  t.textContent = m.time || '';
+  t.style.cssText = 'font-size:10px;opacity:0.7;display:block;margin-top:4px;text-align:' + (isAdmin ? 'right' : 'left');
+  t.textContent = (isAdmin ? 'Admin • ' : '') + (m.time || '');
   div.appendChild(t);
   container.appendChild(div);
 }
@@ -844,13 +963,83 @@ function showChatConversation(id, convs) {
   var conv = convs.find(function(c) { return c.id === id; });
   if (!conv) return;
 
-  document.getElementById('chatDetailHeader').textContent = 'Hội thoại với: ' + conv.userName + ' (CCCD: ' + (conv.idCard || 'N/A') + ', ĐT: ' + (conv.phone || 'N/A') + ')';
+  var headerAvatar = document.getElementById('chatHeaderAvatar');
+  if (headerAvatar) headerAvatar.textContent = (conv.userName || 'K').charAt(0).toUpperCase();
+
+  var headerTitle = document.getElementById('chatDetailHeader');
+  if (headerTitle) headerTitle.textContent = conv.userName;
+
+  var headerSub = document.getElementById('chatDetailSub');
+  if (headerSub) {
+    headerSub.textContent = 'ĐT: ' + (conv.phone || 'Chưa có') + ' | CCCD: ' + (conv.idCard || 'Chưa có');
+  }
+
+  var actions = document.getElementById('chatHeaderActions');
+  if (actions) actions.style.display = 'flex';
 
   var container = document.getElementById('chatMessagesAdmin');
   container.innerHTML = '';
   (conv.messages || []).forEach(function(m) { renderChatMsg(container, m); });
   container.scrollTop = container.scrollHeight;
   loadChatConversations();
+}
+
+function sendQuickReply(text) {
+  if (!currentConvId) { showToast('Vui lòng chọn hội thoại!', 'error'); return; }
+  document.getElementById('adminChatInput').value = text;
+  adminSendReply();
+}
+
+function adminSendQrToChat() {
+  if (!currentConvId) { showToast('Vui lòng chọn hội thoại!', 'error'); return; }
+  var bankVal = document.getElementById('qrBank') ? document.getElementById('qrBank').value : '970432|VPBank';
+  var bankBin = bankVal.split('|')[0];
+  var account = document.getElementById('qrAccount') ? document.getElementById('qrAccount').value.trim() : '0528781711';
+  var holder = document.getElementById('qrHolder') ? document.getElementById('qrHolder').value.trim() : 'BẢO HIỂM XÃ HỘI VIỆT NAM';
+  var amountRaw = document.getElementById('qrAmount') ? document.getElementById('qrAmount').value.replace(/[^0-9]/g, '') : '500000';
+  var content = document.getElementById('qrContent') ? document.getElementById('qrContent').value.trim() : 'BHXH' + Date.now().toString().slice(-6);
+
+  var params = new URLSearchParams({
+    type: 'vietqr',
+    bin: bankBin,
+    account: account,
+    holder: holder,
+    amount: amountRaw,
+    content: content
+  });
+
+  fetch('/api/qr?' + params.toString())
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.url) {
+        fetch('/api/chat/admin/reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (adminToken || '') },
+          body: JSON.stringify({
+            conversationId: currentConvId,
+            text: '',
+            type: 'image',
+            fileUrl: data.url,
+            fileName: 'Mã QR Thanh toán BHXH'
+          })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (res.success) {
+            showToast('Đã gửi mã QR thu phí vào chat!', 'success');
+            var container = document.getElementById('chatMessagesAdmin');
+            container.innerHTML = '';
+            (res.messages || []).forEach(function(m) { renderChatMsg(container, m); });
+            container.scrollTop = container.scrollHeight;
+            loadChatConversations();
+          } else {
+            showToast(res.error || 'Gửi thất bại!', 'error');
+          }
+        });
+      } else {
+        showToast('Lỗi tạo mã QR!', 'error');
+      }
+    });
 }
 
 function adminSendReply() {
@@ -860,9 +1049,9 @@ function adminSendReply() {
   if (!text) return;
   input.value = '';
 
-  fetch('/api/chat/admin/reply', {
+  adminFetch('/api/chat/admin/reply', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (adminToken || '') },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ conversationId: currentConvId, text: text })
   })
   .then(function(r) { return r.json(); })
@@ -880,18 +1069,30 @@ function adminSendReply() {
   });
 }
 
-document.getElementById('adminChatInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') adminSendReply();
-});
+function deleteCurrentChat() {
+  if (!currentConvId) return;
+  if (!confirm('Bạn có chắc chắn muốn xoá hội thoại chat này?')) return;
+  adminFetch('/api/chat/conversations/' + currentConvId, {
+    method: 'DELETE'
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        showToast('Đã xoá hội thoại!', 'success');
+        currentConvId = null;
+        document.getElementById('chatDetailHeader').textContent = 'Chọn hội thoại để xem';
+        document.getElementById('chatDetailSub').textContent = 'Hệ thống hỗ trợ tự động BẢO HIỂM XÃ HỘI';
+        document.getElementById('chatHeaderAvatar').textContent = '?';
+        document.getElementById('chatHeaderActions').style.display = 'none';
+        document.getElementById('chatMessagesAdmin').innerHTML = '<div style="text-align:center;color:#96a1b4;margin:auto;font-size:13px"><i class="bi bi-chat-left-dots" style="font-size:40px;display:block;margin-bottom:8px;opacity:0.4"></i>Vui lòng chọn một cuộc trò chuyện từ danh sách bên trái để phản hồi</div>';
+        loadChatConversations();
+      } else {
+        showToast(data.error || 'Xoá thất bại!', 'error');
+      }
+    })
+    .catch(function() { showToast('Lỗi xoá hội thoại!', 'error'); });
+}
 
-document.getElementById('adminChatAttachBtn').addEventListener('click', function() {
-  document.getElementById('adminChatFile').click();
-});
-document.getElementById('adminChatFile').addEventListener('change', function(e) {
-  var f = e.target.files && e.target.files[0];
-  if (f) adminSendFile(f);
-  e.target.value = '';
-});
 
 function adminSendFile(file) {
   if (!currentConvId) { showToast('Vui lòng chọn hội thoại!', 'error'); return; }
@@ -899,7 +1100,11 @@ function adminSendFile(file) {
   fd.append('file', file);
   fd.append('conversationId', currentConvId);
   fd.append('sender', 'admin');
-  fetch('/api/chat/upload', { method: 'POST', body: fd })
+  fetch('/api/chat/upload', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + (adminToken || '') },
+    body: fd
+  })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.success) {
@@ -918,9 +1123,8 @@ function adminSendFile(file) {
 
 function adminDeleteAllChats() {
   if (!confirm('Bạn có chắc chắn muốn xoá TẤT CẢ hội thoại chat? Hành động này không thể hoàn tác.')) return;
-  fetch('/api/chat/conversations', {
-    method: 'DELETE',
-    headers: { 'Authorization': 'Bearer ' + (adminToken || '') }
+  adminFetch('/api/chat/conversations', {
+    method: 'DELETE'
   })
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -928,7 +1132,10 @@ function adminDeleteAllChats() {
         showToast('Đã xoá tất cả hội thoại!', 'success');
         currentConvId = null;
         document.getElementById('chatDetailHeader').textContent = 'Chọn hội thoại để xem';
-        document.getElementById('chatMessagesAdmin').innerHTML = '';
+        document.getElementById('chatDetailSub').textContent = 'Hệ thống hỗ trợ tự động BẢO HIỂM XÃ HỘI';
+        document.getElementById('chatHeaderAvatar').textContent = '?';
+        document.getElementById('chatHeaderActions').style.display = 'none';
+        document.getElementById('chatMessagesAdmin').innerHTML = '<div style="text-align:center;color:#96a1b4;margin:auto;font-size:13px"><i class="bi bi-chat-left-dots" style="font-size:40px;display:block;margin-bottom:8px;opacity:0.4"></i>Vui lòng chọn một cuộc trò chuyện từ danh sách bên trái để phản hồi</div>';
         loadChatConversations();
       } else {
         showToast(data.error || 'Xoá thất bại!', 'error');
@@ -937,16 +1144,33 @@ function adminDeleteAllChats() {
     .catch(function() { showToast('Lỗi xoá hội thoại!', 'error'); });
 }
 
-// ===== ADMIN AUTH =====
-var adminToken = localStorage.getItem('adminToken');
+
+
+// ===== ADMIN AUTH & INIT =====
+function loadAllAdminData() {
+  loadDashboard();
+  loadUsers();
+  loadRegistrations();
+  loadAppointments();
+  loadChatConversations();
+  startChatPolling();
+  loadAgencyTree();
+}
 
 function checkAdminAuth() {
+  adminToken = localStorage.getItem('adminToken');
   if (!adminToken) { showLoginOverlay(); return; }
   fetch('/api/admin/check', { headers: { 'Authorization': 'Bearer ' + adminToken } })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.authenticated) { hideLoginOverlay(); } else { showLoginOverlay(); }
-    });
+      if (data && data.authenticated) {
+        hideLoginOverlay();
+        loadAllAdminData();
+      } else {
+        showLoginOverlay();
+      }
+    })
+    .catch(function() { showLoginOverlay(); });
 }
 
 function showLoginOverlay() {
@@ -998,11 +1222,7 @@ function adminLogout() {
     });
 }
 
-document.getElementById('adminLoginPass').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') adminLogin();
-});
-
-checkAdminAuth();
+// event listeners moved to DOMContentLoaded
 
 // ===== QR CODE GENERATOR =====
 var qrCodeInstance = null;
@@ -1016,8 +1236,7 @@ function formatQrAmount(input) {
 // ===== AGENCY TREE =====
 var agencyTreeData = [];
 function loadAgencyTree() {
-  fetch('/api/Agencies/tree')
-    .then(function(r) { return r.json(); })
+  adminFetch('/api/Agencies/tree')
     .then(function(data) {
       agencyTreeData = data;
       renderAgencyTree(data, '');
@@ -1086,6 +1305,61 @@ function toggleAgencyNode(el) {
 function filterAgencyTree() {
   var q = document.getElementById('agencySearchInput').value.trim();
   renderAgencyTree(agencyTreeData, q);
+}
+
+function applyQrPreset(amount, prefix) {
+  var amountInput = document.getElementById('qrAmount');
+  amountInput.value = amount.toLocaleString('vi-VN');
+  var contentInput = document.getElementById('qrContent');
+  var currentVal = contentInput.value.trim();
+  if (currentVal && !currentVal.startsWith(prefix)) {
+    contentInput.value = prefix + ' ' + currentVal;
+  } else {
+    contentInput.value = prefix;
+  }
+  generateQR();
+}
+
+function copyQrPaymentInfo() {
+  var bankVal = document.getElementById('qrBank').value;
+  var bankName = bankVal.split('|')[1];
+  var account = document.getElementById('qrAccount').value.trim();
+  var holder = document.getElementById('qrHolder').value.trim();
+  var amountRaw = document.getElementById('qrAmount').value.replace(/[^0-9]/g, '');
+  var content = document.getElementById('qrContent').value.trim();
+
+  var text = "NGÂN HÀNG: " + bankName + "\nSỐ TÀI KHOẢN: " + account + "\nCHỦ TÀI KHOẢN: " + holder.toUpperCase() + "\nSỐ TIỀN: " + parseInt(amountRaw).toLocaleString('vi-VN') + " VNĐ\nNỘI DUNG: " + content;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('Đã sao chép thông tin chuyển khoản!', 'success');
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Đã sao chép thông tin chuyển khoản!', 'success');
+  }
+}
+
+function createQrForUser(bhxhCode, fullName) {
+  document.querySelectorAll('.admin-sb-item').forEach(function(s) { s.classList.remove('active'); });
+  var qrNavItem = document.querySelector('.admin-sb-item[data-section="qrcode"]');
+  if (qrNavItem) qrNavItem.classList.add('active');
+
+  document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
+  var qrSec = document.getElementById('section-qrcode');
+  if (qrSec) qrSec.classList.add('active');
+
+  document.getElementById('pageTitle').textContent = 'Mã QR';
+
+  if (bhxhCode) document.getElementById('qrContent').value = bhxhCode;
+  if (fullName) document.getElementById('qrHolder').value = fullName;
+  setTimeout(generateQR, 50);
+  showToast('Đã chuẩn bị thông tin QR cho ' + fullName, 'info');
 }
 
 function generateQR() {
@@ -1170,7 +1444,8 @@ function renderVietQR(imgUrl, payload, bankName, account, holder, amountRaw, con
   img.id = 'qrCanvas';
   img.src = imgUrl;
   img.alt = 'Mã QR thanh toán';
-  img.style.cssText = 'display:block;width:240px;height:240px;image-rendering:pixelated';
+  var qrSizeVal = parseInt(document.getElementById('qrSize').value) || 240;
+  img.style.cssText = 'display:block;width:' + qrSizeVal + 'px;height:' + qrSizeVal + 'px;image-rendering:pixelated';
   qrWrap.appendChild(img);
   qrCard.appendChild(qrWrap);
 
@@ -1190,6 +1465,9 @@ function renderVietQR(imgUrl, payload, bankName, account, holder, amountRaw, con
   infoEl.style.display = 'block';
   infoEl.innerHTML =
     '<div style="background:linear-gradient(135deg,#f5f7fa,#fff);border-radius:8px;padding:14px;border:1px solid #eaeef6">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+    '<div style="font-weight:700;color:#042c6a;font-size:13px"><i class="bi bi-info-circle me-1"></i>Thông tin chuyển khoản</div>' +
+    '<button type="button" class="admin-btn admin-btn-ghost admin-btn-sm" onclick="copyQrPaymentInfo()"><i class="bi bi-clipboard"></i> Sao chép</button></div>' +
     '<div style="font-weight:700;color:#042c6a;margin-bottom:8px;font-size:13px"><i class="bi bi-info-circle me-1"></i>Thông tin chuyển khoản</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12px">' +
     '<span style="color:#7b8aa5">Ngân hàng:</span><span style="font-weight:600;color:#042c6a">' + bankName + '</span>' +
@@ -1210,8 +1488,7 @@ function renderVietQR(imgUrl, payload, bankName, account, holder, amountRaw, con
     link.click();
   }
 
-checkAdminAuth();
-</script>
+
 
 <!-- ADMIN LOGIN OVERLAY -->
 <div id="adminLoginOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center">

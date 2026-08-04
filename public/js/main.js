@@ -113,7 +113,8 @@ function togglePwd() {
 
 // ========== CAPTCHA ==========
 function refreshLoginCaptcha() {
-  document.getElementById('loginCaptchaBox').textContent = randomString(4);
+  var box = document.getElementById('loginCaptchaBox');
+  if (box) box.textContent = randomString(4);
 }
 
 // ========== STATS ANIMATION ==========
@@ -228,4 +229,16 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+
+  // ── Back to Top ──
+  var backBtn = document.createElement('button');
+  backBtn.id = 'back-to-top';
+  backBtn.innerHTML = '↑';
+  document.body.appendChild(backBtn);
+  window.addEventListener('scroll', function () {
+    window.scrollY > 300 ? backBtn.classList.add('show') : backBtn.classList.remove('show');
+  });
+  backBtn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 });

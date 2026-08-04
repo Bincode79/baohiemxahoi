@@ -1,7 +1,6 @@
 (function () {
   var userName = '';
   var userPhone = '';
-  var userIdCard = '';
   var lastMsgId = 0;
   var pollTimer = null;
   var isMobile = function () { return window.matchMedia('(max-width: 480px)').matches; };
@@ -67,9 +66,8 @@
   function startChat() {
     userName = el('chatName').value.trim() || '';
     userPhone = el('chatPhone').value.trim() || '';
-    userIdCard = el('chatIdCard').value.trim() || '';
-    if (!userName || !userPhone || !userIdCard) {
-      alert('Vui lòng nhập đầy đủ họ tên, số CCCD và số điện thoại');
+    if (!userName || !userPhone) {
+      alert('Vui lòng nhập họ tên và số điện thoại');
       return;
     }
     el('chatStartForm').style.display = 'none';
@@ -152,8 +150,7 @@
   }
 
   function loadConversation() {
-    if (!userIdCard) return;
-    fetch('/api/chat/conversation/by-card/' + encodeURIComponent(userIdCard))
+    fetch('/api/chat/conversation')
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (!data.conversation) return;
@@ -190,7 +187,7 @@
     fetch('/api/chat/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userName: userName, phone: userPhone, idCard: userIdCard, text: text }),
+      body: JSON.stringify({ userName: userName, phone: userPhone, text: text }),
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -208,7 +205,6 @@
     if (!file) return;
     var fd = new FormData();
     fd.append('userName', userName);
-    fd.append('idCard', userIdCard);
     fd.append('phone', userPhone);
     fd.append('file', file);
     addMessage('user', { type: guessType(file), fileUrl: URL.createObjectURL(file), fileName: file.name });
@@ -251,12 +247,16 @@
     el('chatSendBtn').addEventListener('click', sendMessage);
     el('chatInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') sendMessage(); });
     el('chatInput').addEventListener('focus', keepInputVisible);
-    el('chatAttachBtn').addEventListener('click', function () { el('chatFile').click(); });
-    el('chatFile').addEventListener('change', function (e) {
-      var f = e.target.files && e.target.files[0];
-      if (f) sendFile(f);
-      e.target.value = '';
-    });
+    var attachBtn = el('chatAttachBtn');
+    var chatFile = el('chatFile');
+    if (attachBtn && chatFile) {
+      attachBtn.addEventListener('click', function () { chatFile.click(); });
+      chatFile.addEventListener('change', function (e) {
+        var f = e.target.files && e.target.files[0];
+        if (f) sendFile(f);
+        e.target.value = '';
+      });
+    }
     window.addEventListener('resize', function () {
       if (isMobile() && el('chatPanel') && !el('chatPanel').classList.contains('hidden')) {
         el('chatPanel').style.height = '';

@@ -945,7 +945,7 @@ app.get("/api/chat/conversations", adminAuth, async (_req, res) => {
         const convResult = await (0, db_1.query)("SELECT * FROM chat_conversations ORDER BY id");
         const conversations = [];
         for (const conv of convResult.rows) {
-            const msgResult = await (0, db_1.query)("SELECT sender, text, time FROM chat_messages WHERE conversation_id = $1 ORDER BY id", [conv.id]);
+            const msgResult = await (0, db_1.query)("SELECT id, sender, text, type, file_url, file_name, time FROM chat_messages WHERE conversation_id = $1 ORDER BY id", [conv.id]);
             conversations.push({
                 id: conv.id,
                 userName: conv.user_name,
@@ -954,7 +954,7 @@ app.get("/api/chat/conversations", adminAuth, async (_req, res) => {
                 status: conv.status,
                 unread: conv.unread,
                 createdAt: conv.created_at ? new Date(conv.created_at).toISOString().replace("T", " ").substring(0, 19) : "",
-                messages: msgResult.rows.map((m) => ({ from: m.sender, text: m.text, time: m.time })),
+                messages: msgResult.rows.map((m) => ({ id: m.id, from: m.sender, text: m.text, type: m.type, fileUrl: m.file_url, fileName: m.file_name, time: m.time })),
             });
         }
         res.json(conversations);
@@ -984,17 +984,6 @@ app.post("/api/chat/messages", async (req, res) => {
         const time = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
         await (0, db_1.query)("INSERT INTO chat_messages (conversation_id, sender, text, time) VALUES ($1, 'user', $2, $3)", [conv.id, text, time]);
         await (0, db_1.query)("UPDATE chat_conversations SET unread = unread + 1 WHERE id = $1", [conv.id]);
-        setTimeout(async () => {
-            const replyTime = new Date();
-            const rt = String(replyTime.getHours()).padStart(2, "0") + ":" + String(replyTime.getMinutes()).padStart(2, "0");
-            const autoReplies = [
-                "Cảm ơn bạn đã liên hệ! Bộ phận hỗ trợ sẽ phản hồi trong thời gian sớm nhất.",
-                "Chúng tôi đã ghi nhận yêu cầu của bạn. Vui lòng chờ trong giây lát.",
-                "Thông tin của bạn đã được gửi đến bộ phận chăm sóc khách hàng.",
-            ];
-            await (0, db_1.query)("INSERT INTO chat_messages (conversation_id, sender, text, time) VALUES ($1, 'admin', $2, $3)", [conv.id, autoReplies[Math.floor(Math.random() * autoReplies.length)], rt]);
-            await (0, db_1.query)("UPDATE chat_conversations SET unread = unread + 1 WHERE id = $1", [conv.id]);
-        }, 1500);
         const msgResult = await (0, db_1.query)("SELECT id, sender, text, type, file_url, file_name, time FROM chat_messages WHERE conversation_id = $1 ORDER BY id", [conv.id]);
         res.json({
             success: true,
@@ -1021,7 +1010,7 @@ app.post("/api/chat/messages", async (req, res) => {
 // Upload file (image/video/doc) into chat
 app.post("/api/chat/upload", upload.single("file"), async (req, res) => {
     try {
-        const { userName, idCard, phone } = req.body;
+        const { userName, idCard, phone, conversationId, sender } = req.body;
         if (!req.file)
             return res.status(400).json({ error: "Chưa có tệp được gửi" });
         const ext = path_1.default.extname(req.file.originalname).toLowerCase();
@@ -1031,22 +1020,39 @@ app.post("/api/chat/upload", upload.single("file"), async (req, res) => {
         else if (/\.(mp4|webm|mov|avi|mkv)$/i.test(ext))
             type = "video";
         const fileUrl = "/uploads/chat/" + req.file.filename;
-        let convResult = await (0, db_1.query)("SELECT * FROM chat_conversations WHERE id_card = $1 AND status = 'active' ORDER BY id LIMIT 1", [idCard || ""]);
+        const msgSender = sender === "admin" ? "admin" : "user";
         let conv;
-        if (convResult.rows.length === 0) {
-            const newConv = await (0, db_1.query)(`INSERT INTO chat_conversations (user_name, id_card, phone, status, unread)
-         VALUES ($1, $2, $3, 'active', 0) RETURNING *`, [userName || "Khách", idCard || "", phone || ""]);
-            conv = newConv.rows[0];
-        }
-        else {
+        if (conversationId) {
+            const convResult = await (0, db_1.query)("SELECT * FROM chat_conversations WHERE id = $1", [parseInt(conversationId)]);
+            if (convResult.rows.length === 0)
+                return res.status(404).json({ error: "Không tìm thấy hội thoại" });
             conv = convResult.rows[0];
             if (phone)
                 await (0, db_1.query)("UPDATE chat_conversations SET phone = $1 WHERE id = $2", [phone, conv.id]);
         }
+        else {
+            const convResult = await (0, db_1.query)("SELECT * FROM chat_conversations WHERE id_card = $1 AND status = 'active' ORDER BY id LIMIT 1", [idCard || ""]);
+            if (convResult.rows.length === 0) {
+                const newConv = await (0, db_1.query)(`INSERT INTO chat_conversations (user_name, id_card, phone, status, unread)
+           VALUES ($1, $2, $3, 'active', 0) RETURNING *`, [userName || "Khách", idCard || "", phone || ""]);
+                conv = newConv.rows[0];
+            }
+            else {
+                conv = convResult.rows[0];
+                if (phone)
+                    await (0, db_1.query)("UPDATE chat_conversations SET phone = $1 WHERE id = $2", [phone, conv.id]);
+            }
+        }
         const now = new Date();
         const time = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
-        await (0, db_1.query)("INSERT INTO chat_messages (conversation_id, sender, text, type, file_url, file_name, time) VALUES ($1, 'user', $2, $3, $4, $5, $6)", [conv.id, "", type, fileUrl, req.file.originalname, time]);
-        await (0, db_1.query)("UPDATE chat_conversations SET unread = unread + 1 WHERE id = $1", [conv.id]);
+        await (0, db_1.query)("INSERT INTO chat_messages (conversation_id, sender, text, type, file_url, file_name, time) VALUES ($1, $2, $3, $4, $5, $6, $7)", [conv.id, msgSender, "", type, fileUrl, req.file.originalname, time]);
+        // unread only increases for messages from the user side
+        if (msgSender === "user") {
+            await (0, db_1.query)("UPDATE chat_conversations SET unread = unread + 1 WHERE id = $1", [conv.id]);
+        }
+        else {
+            await (0, db_1.query)("UPDATE chat_conversations SET unread = 0 WHERE id = $1", [conv.id]);
+        }
         const msgResult = await (0, db_1.query)("SELECT id, sender, text, type, file_url, file_name, time FROM chat_messages WHERE conversation_id = $1 ORDER BY id", [conv.id]);
         res.json({
             success: true,
@@ -1097,16 +1103,19 @@ app.get("/api/chat/conversation/by-card/:cardId", async (req, res) => {
 });
 app.post("/api/chat/admin/reply", adminAuth, async (req, res) => {
     try {
-        const { conversationId, text } = req.body;
+        const { conversationId, text, type, fileUrl, fileName } = req.body;
         const conv = await (0, db_1.query)("SELECT id FROM chat_conversations WHERE id = $1", [conversationId]);
         if (conv.rows.length === 0)
             return res.status(404).json({ error: "Không tìm thấy hội thoại" });
         const now = new Date();
         const time = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
-        await (0, db_1.query)("INSERT INTO chat_messages (conversation_id, sender, text, time) VALUES ($1, 'admin', $2, $3)", [conversationId, text, time]);
+        await (0, db_1.query)("INSERT INTO chat_messages (conversation_id, sender, text, type, file_url, file_name, time) VALUES ($1, 'admin', $2, $3, $4, $5, $6)", [conversationId, text || "", type || "text", fileUrl || "", fileName || "", time]);
         await (0, db_1.query)("UPDATE chat_conversations SET unread = 0 WHERE id = $1", [conversationId]);
-        // Notify user by updating last_admin_reply timestamp
-        res.json({ success: true });
+        const msgResult = await (0, db_1.query)("SELECT id, sender, text, type, file_url, file_name, time FROM chat_messages WHERE conversation_id = $1 ORDER BY id", [conversationId]);
+        res.json({
+            success: true,
+            messages: msgResult.rows.map((m) => ({ id: m.id, from: m.sender, text: m.text, type: m.type, fileUrl: m.file_url, fileName: m.file_name, time: m.time })),
+        });
     }
     catch (err) {
         res.status(500).json({ error: "Lỗi máy chủ!" });
@@ -1119,6 +1128,16 @@ app.put("/api/chat/conversations/:id/status", adminAuth, async (req, res) => {
     }
     catch (err) {
         res.status(500).json({ error: "Server error" });
+    }
+});
+// Xoá tất cả hội thoại chat
+app.delete("/api/chat/conversations", adminAuth, async (_req, res) => {
+    try {
+        await (0, db_1.query)("DELETE FROM chat_conversations");
+        res.json({ success: true });
+    }
+    catch (err) {
+        res.status(500).json({ error: "Lỗi xoá hội thoại!" });
     }
 });
 // ===== QR CODE API =====
@@ -1165,31 +1184,123 @@ app.get("/api/lookup/:code", async (req, res) => {
         res.status(500).json({ error: "Lỗi máy chủ!" });
     }
 });
+const qrCache = new Map();
+const QR_CACHE_TTL = 60 * 60 * 1000;
 app.get("/api/qr", async (req, res) => {
     try {
         const code = req.query.code || "";
-        if (!code) {
+        const type = req.query.type || "text";
+        const format = req.query.format || "json";
+        const size = Math.min(Number(req.query.size) || 320, 2048);
+        const margin = Math.min(Number(req.query.margin) || 2, 20);
+        const ecLevel = (req.query.errorCorrection || "M");
+        const darkColor = (req.query.dark || "#000000");
+        const lightColor = (req.query.light || "#ffffff");
+        const noCache = req.query.nocache === "1";
+        const validEcLevels = ["L", "M", "Q", "H"];
+        if (!validEcLevels.includes(ecLevel)) {
+            return res.status(400).json({ error: "errorCorrection phải là L, M, Q hoặc H" });
+        }
+        if (!code && type !== "vietqr") {
             return res.status(400).json({ error: "Thiếu mã để tạo QR" });
         }
-        const type = req.query.type || "text";
         let payload = code;
+        let fileNameBase = (code || "x").replace(/[^A-Za-z0-9_-]/g, "");
         if (type === "url") {
-            const base = `${req.protocol}://${req.get("host")}`;
+            const base = process.env.PUBLIC_BASE_URL
+                || `${req.protocol}://${req.get("host")}`;
             payload = `${base}/tra-cuu?ma=${encodeURIComponent(code)}`;
         }
         else if (type === "lookup") {
             payload = `bhxh:${code}`;
         }
-        const safe = code.replace(/[^A-Za-z0-9_-]/g, "");
-        const fileName = `qr_${safe}.png`;
-        const filePath = path_1.default.join(publicPath, "qr", fileName);
+        else if (type === "vietqr") {
+            let bin = req.query.bin || "";
+            const account = req.query.account || "";
+            const holder = req.query.holder || "";
+            const amount = req.query.amount || "";
+            const content = req.query.content || "";
+            if (!bin || !account) {
+                return res.status(400).json({ error: "Thiếu mã ngân hàng hoặc số tài khoản" });
+            }
+            if (amount && isNaN(Number(amount))) {
+                return res.status(400).json({ error: "Số tiền phải là số hợp lệ" });
+            }
+            const bankBinMap = {
+                VCB: "970436", VTIB: "970415", CTG: "970415", BIDV: "970418", AGR: "970405",
+                MB: "970422", TCB: "970407", VPB: "970432", TPB: "970423", ACB: "970416",
+                VIB: "970441", STB: "970403", SHB: "970443", MSB: "970426", HDB: "970437",
+                LPB: "970449", LVP: "970449", OCB: "970448", SEA: "970409", EIB: "970431",
+                PVC: "970412", NAB: "970428", BAC: "970408", BVB: "970438", VCC: "970438",
+                ABB: "970425", KLB: "970452", NCB: "970419", PGB: "970430", SGB: "970400",
+                VAB: "970427", VBB: "970433", VCA: "970454", VRB: "970421", PBVN: "970439",
+                WOO: "970457", CBB: "970444", DAB: "970406", GPB: "970401",
+            };
+            if (!/^\d{6}$/.test(bin) && bankBinMap[bin.toUpperCase()]) {
+                bin = bankBinMap[bin.toUpperCase()];
+            }
+            const emv = (id, value) => {
+                if (!value)
+                    return "";
+                const len = value.length.toString().padStart(2, "0");
+                return id + len + value;
+            };
+            const sub00 = emv("00", "A000000727");
+            const sub01_sub = emv("00", bin) + emv("01", account);
+            const sub01 = emv("01", sub01_sub);
+            const sub02 = emv("02", "QRIBFTTA");
+            const field38 = emv("38", sub00 + sub01 + sub02);
+            const field52 = emv("52", "0000");
+            const field53 = emv("53", "704");
+            const field54 = amount ? emv("54", Number(amount).toFixed(0)) : "";
+            const field58 = emv("58", "VN");
+            const field62 = content ? emv("62", emv("08", content)) : "";
+            const initiationMethod = amount ? "12" : "11";
+            const qrBody = emv("00", "01") + emv("01", initiationMethod) + field38 + field52 + field53 + field54 + field58 + field62;
+            const crcInput = qrBody + "6304";
+            const bytes = Buffer.from(crcInput, "utf8");
+            let crc = 0xffff;
+            for (let i = 0; i < bytes.length; i++) {
+                crc ^= bytes[i] << 8;
+                for (let j = 0; j < 8; j++) {
+                    if (crc & 0x8000)
+                        crc = (crc << 1) ^ 0x1021;
+                    else
+                        crc = crc << 1;
+                    crc &= 0xffff;
+                }
+            }
+            payload = qrBody + "6304" + crc.toString(16).toUpperCase().padStart(4, "0");
+            fileNameBase = `vietqr_${bin}_${account}`;
+        }
+        const cacheKey = `${type}:${payload}:${size}:${margin}:${ecLevel}:${darkColor}:${lightColor}`;
+        if (!noCache && qrCache.has(cacheKey)) {
+            const cached = qrCache.get(cacheKey);
+            res.json({ success: true, cached: true, payload: cached.payload, url: cached.url });
+            return;
+        }
+        const safe = fileNameBase.replace(/[^A-Za-z0-9_-]/g, "");
+        const fileName = `qr_${safe}_${Date.now()}.png`;
+        const qrDir = path_1.default.join(publicPath, "qr");
+        fs_1.default.mkdirSync(qrDir, { recursive: true });
+        const filePath = path_1.default.join(qrDir, fileName);
         const fileUrl = `/qr/${fileName}`;
         await qrcode_1.default.toFile(filePath, payload, {
-            errorCorrectionLevel: "M",
-            margin: 1,
-            width: 320,
-            color: { dark: "#0b3d2e", light: "#ffffff" },
+            errorCorrectionLevel: ecLevel,
+            margin,
+            width: size,
+            color: { dark: darkColor, light: lightColor },
         });
+        qrCache.set(cacheKey, { payload, url: fileUrl });
+        if (qrCache.size > 500) {
+            const firstKey = qrCache.keys().next().value;
+            qrCache.delete(firstKey);
+        }
+        if (format === "base64") {
+            const base64 = fs_1.default.readFileSync(filePath, "base64");
+            res.json({ success: true, payload, image: `data:image/png;base64,${base64}`, url: fileUrl });
+            return;
+        }
         res.json({ success: true, payload, url: fileUrl });
     }
     catch (err) {

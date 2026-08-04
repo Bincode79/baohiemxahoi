@@ -164,42 +164,80 @@
         <h3><i class="bi bi-credit-card-2-front me-2"></i>QUÉT CCCD GẮN CHIP</h3>
         <button onclick="closeCccdScan()"><i class="bi bi-x-lg"></i></button>
       </div>
+      <div class="cccd-progress" id="cccdProgress" style="display:none">
+        <div class="cp-dots">
+          <span class="cp-dot"></span>
+          <span class="cp-dot"></span>
+          <span class="cp-dot"></span>
+        </div>
+        <div class="cccd-progress-step" id="cccdProgressStep">Đang khởi tạo thiết bị...</div>
+      </div>
       <div class="cccd-body">
         <div class="cccd-card-area">
-          <div class="cccd-card" id="cccdCardVisual">
-            <div class="card-ghost" id="cccdCardGhost">
-              <i class="bi bi-credit-card"></i>
-            </div>
-            <div class="cccd-scanner-line" id="cccdScannerLine"></div>
-            <div class="cccd-card-inner">
-              <div class="cccd-top">
-                <div class="cccd-photo"><i class="bi bi-person-fill"></i></div>
-                <div class="cccd-top-right">
-                  <div class="chip"></div>
-                  <svg class="emblem" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="#c62828"/><text x="18" y="22" text-anchor="middle" fill="#ffd700" font-size="10" font-weight="bold">★</text></svg>
-                  <div class="card-type">CĂN CƯỚC CÔNG DÂN</div>
-                  <div class="card-sub">SOCIALIST REPUBLIC OF VIETNAM</div>
-                  <div class="card-sub2">Independence - Freedom - Happiness</div>
+          <div class="cccd-scan-frame" id="cccdScanFrame">
+            <div class="cccd-card" id="cccdCardVisual">
+              <div class="card-ghost" id="cccdCardGhost">
+                <div class="ghost-icon"><i class="bi bi-credit-card"></i></div>
+                <div class="ghost-text">Đặt thẻ vào khung</div>
+              </div>
+              <div class="cccd-scanner-line" id="cccdScannerLine"></div>
+
+              <!-- Front of card -->
+              <div class="cccd-card-inner" id="cccdCardFront">
+                <div class="cccd-qr-code" id="cardQrCode"></div>
+                <div class="cccd-top-row">
+                  <div class="cccd-quoc-hieu">
+                    <div class="qh-line1">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                    <div class="qh-line2">Độc lập - Tự do - Hạnh phúc</div>
+                  </div>
+                  <div class="cccd-emblem">
+                    <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#c62828"/><text x="20" y="25" text-anchor="middle" fill="#ffd700" font-size="16">★</text></svg>
+                  </div>
+                </div>
+                <div class="cccd-title">CĂN CƯỚC CÔNG DÂN</div>
+                <div class="cccd-card-no-label">Số: <span class="cccd-card-no" id="cccdCardNo">001099001234</span></div>
+                <div class="cccd-info-row">
+                  <div class="cccd-photo-box" id="cccdPhotoBox">
+                    <img id="cccdPhotoImg" style="display:none" alt="Photo" />
+                    <div class="photo-placeholder" id="cccdPhotoPlaceholder"><i class="bi bi-person-fill"></i></div>
+                  </div>
+                  <div class="cccd-details">
+                    <div class="cd-field"><span class="cd-lbl">Họ và tên</span><span class="cd-val" id="cdFullName">NGUYỄN VĂN AN</span></div>
+                    <div class="cd-row">
+                      <div class="cd-field cd-half"><span class="cd-lbl">Ngày sinh</span><span class="cd-val" id="cdDob">15/06/1990</span></div>
+                      <div class="cd-field cd-half"><span class="cd-lbl">Giới tính</span><span class="cd-val" id="cdSex">Nam</span></div>
+                    </div>
+                    <div class="cd-field"><span class="cd-lbl">Quốc tịch</span><span class="cd-val">Việt Nam</span></div>
+                    <div class="cd-field"><span class="cd-lbl">Quê quán</span><span class="cd-val cd-val-sm" id="cdOrigin">Xã Đại Mỗ, Huyện Từ Liêm, Thành phố Hà Nội</span></div>
+                    <div class="cd-field"><span class="cd-lbl">Nơi thường trú</span><span class="cd-val cd-val-sm" id="cdAddress">Số 7, Nguyễn Cảnh Hoan, Phường Dịch Vọng, Quận Cầu Giấy, Thành phố Hà Nội</span></div>
+                    <div class="cd-field cd-expiry"><span class="cd-lbl">Có giá trị đến</span><span class="cd-val" id="cdExpiry">25/12/2032</span></div>
+                  </div>
+                </div>
+                <div class="cccd-mrz">
+                  <div class="mrz-line" id="mrzLine1">A&lt;&lt;VIETNAM&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+                  <div class="mrz-line" id="mrzLine2">0&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;0VN0&lt;&lt;&lt;&lt;&lt;&lt;&lt;0&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;0&lt;&lt;</div>
                 </div>
               </div>
-              <div class="cccd-mrz">
-                <div class="mrz-line">A&lt;&lt;VIETNAM&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
-                <div class="mrz-line">0&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;0VN0&lt;&lt;&lt;&lt;&lt;&lt;&lt;0&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;0&lt;&lt;</div>
-              </div>
             </div>
-            <div class="card-bg"></div>
           </div>
+
           <button class="cccd-scan-btn" id="cccdScanBtn" onclick="startCccdScan()">
             <i class="bi bi-qr-code-scan"></i> QUÉT CCCD
           </button>
-          <div class="cccd-progress" id="cccdProgress" style="display:none">
-            <div class="cccd-progress-bar"><div class="cccd-progress-fill" id="cccdProgressFill"></div></div>
-            <div class="cccd-progress-step" id="cccdProgressStep">Đang khởi tạo thiết bị...</div>
-          </div>
           <div class="cccd-loader" id="cccdLoader" style="display:none">
             <div class="spinner"></div> Đang đọc dữ liệu từ chip...
           </div>
+
+          <!-- Scan result info -->
+          <div class="cccd-result" id="cccdResult" style="display:none">
+            <div class="cr-header"><i class="bi bi-check-circle-fill"></i> Đã đọc thành công</div>
+            <div class="cr-bhxh">Mã BHXH: <strong id="crBhxh">0123456789</strong></div>
+            <button class="cr-auto-btn" onclick="document.getElementById('loginUsername').value=this.dataset.bhxh;closeCccdScan();document.getElementById('loginPassword').focus()" id="crAutoFill">
+              <i class="bi bi-person-fill-add"></i> Tự động điền mã BHXH
+            </button>
+          </div>
         </div>
+
         <div class="cccd-qr" id="cccdQrBox" style="display:none">
           <div class="cccd-qr-title">Mã QR tra cứu hồ sơ</div>
           <img id="cccdQrImg" alt="Mã QR mã số BHXH" />
@@ -272,15 +310,13 @@
   <div class="chat-panel hidden" id="chatPanel">
     <div class="chat-head">
       <img src="/images/logonew.png" alt="BHXH">
-      <div class="info"><div class="name">Trung Tâm BHXH</div><div class="status">Đang trực tuyến</div></div>
+      <div class="info"><div class="name">TRUNG TÂM HỖ TRỢ BHXH</div><div class="status">Đang trực tuyến</div></div>
       <button class="close" id="chatClose"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="chat-msgs" id="chatMessages" style="display:none"></div>
     <div class="chat-start-form" id="chatStartForm">
-      <div class="sf-title">Hỗ trợ trực tuyến BHXH</div>
       <div class="sf-sub">Vui lòng để lại thông tin để bắt đầu trò chuyện với bộ phận hỗ trợ.</div>
       <input type="text" id="chatName" placeholder="Họ và tên *">
-      <input type="text" id="chatIdCard" placeholder="Số CCCD *">
       <input type="tel" id="chatPhone" placeholder="Số điện thoại *">
       <button class="start-btn" id="chatStartBtn">Bắt đầu trò chuyện</button>
     </div>
@@ -299,13 +335,19 @@
     <div class="container">
       <div class="f-text">
         &copy;2014 – 2026 - Bản quyền thuộc về <strong>Bảo Hiểm Việt Nam</strong>.<br>
-        Khi sử dụng lại thông tin từ website này, xin vui lòng ghi rõ nguồn "BẢO HIỂM VIỆT NAM" &nbsp;·&nbsp;
+        Khi sử dụng lại thông tin từ website này, xin vui lòng ghi rõ nguồn "BẢO HIỂM VIỆT NAM"<br>
+        <a href="#" class="f-policy-link">Chính sách bảo mật</a> &nbsp;·&nbsp;
+        <a href="#" class="f-terms-link">Điều khoản sử dụng</a> &nbsp;·&nbsp;
+        <a href="#" class="f-policy-link">Liên hệ</a>
+        <div class="f-badges">
+          <img src="https://www.bocongan.gov.vn/bo-cong-an-banner.png" alt="BCT" onerror="this.style.display='none'" />
+          <img src="https://images.dmca.com/Badges/dmca-badge-w100-5x1-01.png" alt="DMCA" onerror="this.style.display='none'" />
+        </div>
       </div>
       <div class="f-social">
         <a href="#" title="Facebook"><i class="bi bi-facebook"></i></a>
         <a href="#" title="YouTube"><i class="bi bi-youtube"></i></a>
         <a href="#" title="Zalo"><i class="bi bi-chat-dots-fill"></i></a>
-        <!-- admin link removed -->
       </div>
     </div>
   </footer>
@@ -345,11 +387,12 @@
       document.getElementById('cccdScannerLine').classList.remove('active');
       document.getElementById('cccdLoader').classList.remove('active');
       document.getElementById('cccdProgress').style.display = 'none';
-      document.getElementById('cccdProgressFill').style.width = '0%';
       document.getElementById('cccdProgressStep').textContent = '';
       document.getElementById('cccdScanBtn').disabled = false;
       document.getElementById('cccdScanBtn').innerHTML = '<i class="bi bi-qr-code-scan"></i> QUÉT CCCD';
       document.getElementById('cccdQrBox').style.display = 'none';
+      document.getElementById('cccdResult').style.display = 'none';
+      populateCccdData(mockCccdData);
     }
     // Mock data for simulated scan
     var mockCccdData = {
@@ -362,40 +405,72 @@
       issue: '25/12/2022',
       bhxh: '0123456789'
     };
+    function populateCccdData(data) {
+      document.getElementById('cccdCardNo').textContent = data.id;
+      document.getElementById('cdFullName').textContent = data.name;
+      document.getElementById('cdDob').textContent = data.dob;
+      document.getElementById('cdSex').textContent = data.sex;
+      document.getElementById('cdOrigin').textContent = data.origin;
+      document.getElementById('cdAddress').textContent = data.address;
+      document.getElementById('cdExpiry').textContent = data.issue ? (data.issue.split('/').map(function(n,i){return i===2?String(Number(n)+10):n}).join('/')) : '—';
+      document.getElementById('crBhxh').textContent = data.bhxh;
+      var autoBtn = document.getElementById('crAutoFill');
+      autoBtn.dataset.bhxh = data.bhxh;
+
+      // Build MRZ
+      var mrzName = data.name.replace(/ /g,'<');
+      while (mrzName.length < 28) mrzName += '<';
+      document.getElementById('mrzLine1').textContent = 'A<<' + mrzName;
+      var mrz2 = data.id.replace(/\D/g,'').slice(0,9).padEnd(9,'<');
+      var dobCode = data.dob ? data.dob.split('/').join('') : '<'.repeat(6);
+      while (dobCode.length < 6) dobCode += '<';
+      document.getElementById('mrzLine2').textContent = mrz2 + '0VN0' + dobCode + '0<<<<<<<<<<<<<<<0<<';
+    }
+    function populateCardQr() {
+      var box = document.getElementById('cardQrCode');
+      var id = document.getElementById('cccdCardNo').textContent;
+      if (id && id !== '001099001234') {
+        box.innerHTML = '<div class="qr-placeholder">QR</div>';
+      } else {
+        box.innerHTML = '<div class="qr-placeholder">QR</div>';
+      }
+    }
     function startCccdScan() {
       var btn = document.getElementById('cccdScanBtn');
       var loader = document.getElementById('cccdLoader');
       var scannerLine = document.getElementById('cccdScannerLine');
+      var frame = document.getElementById('cccdScanFrame');
       var progress = document.getElementById('cccdProgress');
-      var fill = document.getElementById('cccdProgressFill');
       var step = document.getElementById('cccdProgressStep');
+      var result = document.getElementById('cccdResult');
       btn.disabled = true;
       btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang quét...';
       btn.classList.add('scanning');
       loader.classList.add('active');
       progress.style.display = 'block';
       scannerLine.classList.add('active');
+      result.style.display = 'none';
       var steps = [
-        { p: 8,  t: 'Đang khởi tạo thiết bị đọc chip...' },
-        { p: 20, t: 'Kết nối với chip CCCD gắn chíp...' },
-        { p: 35, t: 'Xác thực bảo mật chip tiếp xúc...' },
-        { p: 50, t: 'Đọc dữ liệu sinh trắc học (vân tay)...' },
-        { p: 65, t: 'Giải mã thông tin trên chip...' },
-        { p: 80, t: 'Đồng bộ dữ liệu với cơ quan BHXH...' },
-        { p: 92, t: 'Xác nhận tính toàn vẹn dữ liệu...' },
-        { p: 100, t: 'Hoàn tất! Đang tạo mã tra cứu...' }
+        'Đang khởi tạo thiết bị đọc chip...',
+        'Kết nối với chip CCCD gắn chíp...',
+        'Xác thực bảo mật chip tiếp xúc...',
+        'Đọc dữ liệu sinh trắc học...',
+        'Giải mã thông tin trên chip...',
+        'Đồng bộ dữ liệu với cơ quan BHXH...',
+        'Xác nhận tính toàn vẹn dữ liệu...',
+        'Hoàn tất! Đang tạo mã tra cứu...'
       ];
       var i = 0;
-      fill.style.width = '0%';
+      step.textContent = steps[0];
       var timer = setInterval(function() {
-        var s = steps[i];
-        fill.style.width = s.p + '%';
-        step.textContent = s.t;
         i++;
+        if (i < steps.length) step.textContent = steps[i];
         if (i >= steps.length) clearInterval(timer);
-      }, 3400);
+      }, 3600);
       setTimeout(function() {
         var data = mockCccdData;
+        populateCccdData(data);
+        populateCardQr();
         document.getElementById('cccdCardGhost').classList.add('hidden');
         generateBhxhQr(data.bhxh);
         btn.disabled = false;
@@ -403,8 +478,9 @@
         btn.classList.remove('scanning');
         loader.classList.remove('active');
         scannerLine.classList.remove('active');
-        fill.style.width = '100%';
-        step.textContent = 'Quét thành công! Mã QR tra cứu đã sẵn sàng.';
+        step.textContent = 'Quét thành công!';
+        result.style.display = 'flex';
+        progress.style.display = 'none';
       }, 30000);
     }
     // Close on backdrop click

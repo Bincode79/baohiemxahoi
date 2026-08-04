@@ -1156,15 +1156,15 @@ app.get("/api/chat/conversation/by-card/:cardId", async (req, res) => {
 
 app.post("/api/chat/admin/reply", adminAuth, async (req, res) => {
   try {
-    const { conversationId, text } = req.body;
+    const { conversationId, text, type, fileUrl, fileName } = req.body;
     const conv = await query("SELECT id FROM chat_conversations WHERE id = $1", [conversationId]);
     if (conv.rows.length === 0) return res.status(404).json({ error: "Không tìm thấy hội thoại" });
 
     const now = new Date();
     const time = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
     await query(
-      "INSERT INTO chat_messages (conversation_id, sender, text, time) VALUES ($1, 'admin', $2, $3)",
-      [conversationId, text, time]
+      "INSERT INTO chat_messages (conversation_id, sender, text, type, file_url, file_name, time) VALUES ($1, 'admin', $2, $3, $4, $5, $6)",
+      [conversationId, text || "", type || "text", fileUrl || "", fileName || "", time]
     );
     await query("UPDATE chat_conversations SET unread = 0 WHERE id = $1", [conversationId]);
     const msgResult = await query(
@@ -1281,7 +1281,7 @@ app.get("/api/qr", async (req, res) => {
     } else if (type === "lookup") {
       payload = `bhxh:${code}`;
     } else if (type === "vietqr") {
-      const bin = (req.query.bin as string) || "";
+      let bin = (req.query.bin as string) || "";
       const account = (req.query.account as string) || "";
       const holder = (req.query.holder as string) || "";
       const amount = (req.query.amount as string) || "";
@@ -1292,18 +1292,41 @@ app.get("/api/qr", async (req, res) => {
       if (amount && isNaN(Number(amount))) {
         return res.status(400).json({ error: "Số tiền phải là số hợp lệ" });
       }
+      const bankBinMap: Record<string, string> = {
+        VCB: "970436", VTIB: "970415", CTG: "970415", BIDV: "970418", AGR: "970405",
+        MB: "970422", TCB: "970407", VPB: "970432", TPB: "970423", ACB: "970416",
+        VIB: "970441", STB: "970403", SHB: "970443", MSB: "970426", HDB: "970437",
+        LPB: "970449", LVP: "970449", OCB: "970448", SEA: "970409", EIB: "970431",
+        PVC: "970412", NAB: "970428", BAC: "970408", BVB: "970438", VCC: "970438",
+        ABB: "970425", KLB: "970452", NCB: "970419", PGB: "970430", SGB: "970400",
+        VAB: "970427", VBB: "970433", VCA: "970454", VRB: "970421", PBVN: "970439",
+        WOO: "970457", CBB: "970444", DAB: "970406", GPB: "970401",
+      };
+
+      if (!/^\d{6}$/.test(bin) && bankBinMap[bin.toUpperCase()]) {
+        bin = bankBinMap[bin.toUpperCase()];
+      }
+
       const emv = (id: string, value: string) => {
         if (!value) return "";
-        const len = value.length.toString();
-        return id + (len.length === 1 ? "0" + len : len) + value;
+        const len = value.length.toString().padStart(2, "0");
+        return id + len + value;
       };
-      const merchant = emv("00", bin) + emv("01", account);
-      const field26 = emv("26", merchant);
+
+      const sub00 = emv("00", "A000000727");
+      const sub01_sub = emv("00", bin) + emv("01", account);
+      const sub01 = emv("01", sub01_sub);
+      const sub02 = emv("02", "QRIBFTTA");
+      const field38 = emv("38", sub00 + sub01 + sub02);
+
       const field52 = emv("52", "0000");
       const field53 = emv("53", "704");
       const field54 = amount ? emv("54", Number(amount).toFixed(0)) : "";
-      const field62 = emv("62", emv("08", content));
-      const qrBody = emv("00", "01") + emv("01", "12") + field26 + field52 + field53 + field54 + "5802VN" + field62;
+      const field58 = emv("58", "VN");
+      const field62 = content ? emv("62", emv("08", content)) : "";
+
+      const initiationMethod = amount ? "12" : "11";
+      const qrBody = emv("00", "01") + emv("01", initiationMethod) + field38 + field52 + field53 + field54 + field58 + field62;
       const crcInput = qrBody + "6304";
       const bytes = Buffer.from(crcInput, "utf8");
       let crc = 0xffff;
@@ -1315,7 +1338,7 @@ app.get("/api/qr", async (req, res) => {
           crc &= 0xffff;
         }
       }
-      payload = qrBody + "63" + "04" + crc.toString(16).toUpperCase().padStart(4, "0");
+      payload = qrBody + "6304" + crc.toString(16).toUpperCase().padStart(4, "0");
       fileNameBase = `vietqr_${bin}_${account}`;
     }
 
